@@ -1,21 +1,10 @@
 import React from "react";
-import type { CategoryName } from "../types";
+import type { Subscription } from "../types";
 import { daysBetween, nextMonthSameDay } from "../helper";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { categories } from "../data";
 
-type Props = {
-  subscriptionName: string;
-  categoryName: `${CategoryName}`;
-  amount: number;
-  expiryDate: Date;
-  // Which day of month
-  dayofPayment: number;
-  frequency?: "Monthly" | "Yearly" | "Weekly" | "Daily";
-  priority?: "High" | "Medium" | "Low" | "None";
-};
-
-function SubscriptionCard(props: Props) {
+function SubscriptionCard(props: Subscription) {
   const {
     subscriptionName,
     categoryName,
@@ -43,6 +32,14 @@ function SubscriptionCard(props: Props) {
     (cat) => cat.categoryname === categoryName,
   );
 
+  const expiryDateObj = expiryDate && new Date(expiryDate);
+
+  // 2. Validate that the string was actually a valid date
+  if (expiryDateObj && isNaN(expiryDateObj.getTime())) {
+    console.error("Invalid date string received");
+    return;
+  }
+
   return (
     <div
       className={`flex items-center justify-between gap-[1rem] p-[2rem_2rem] bg-text rounded-[1rem] ${priorityBorder} shadow-[14px_14px_28px_#f5f0e9] w-full`}
@@ -69,9 +66,9 @@ function SubscriptionCard(props: Props) {
               Renews in{" "}
               {daysBetween(new Date(), nextMonthSameDay(dayofPayment))}d
             </p>
-            {daysBetween(new Date(), expiryDate) <= 30 && (
+            {expiryDateObj && daysBetween(new Date(), expiryDateObj) <= 30 && (
               <p className="text-accent bg-accent-bg p-[0.2rem_0.5rem] rounded-[5px] w-fit">
-                Cancel by {customDate(expiryDate)}
+                Cancel by {customDate(expiryDateObj)}
               </p>
             )}
           </div>
