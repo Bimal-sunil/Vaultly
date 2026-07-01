@@ -1,27 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../components/InputField";
 import type { Subscription } from "../types";
 import Select from "../components/Select";
 import { categories } from "../data";
 import Button from "../components/Button";
 import { supabase } from "../../utils/supabase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function AddSubscription() {
   const [showError, setShowError] = useState<boolean>(false);
+  const { subscriptionId } = useParams<{ subscriptionId: string }>();
+  const isEditMode = Boolean(subscriptionId);
 
   const [subscriptionData, setSubscriptionData] = useState<Subscription>({
     subscriptionName: "",
     amount: 0,
     categoryName: "Other",
-    dayofPayment: 1,
+    frequency: "Monthly",
+    renewalDayOfMonth: 1,
   });
 
   const requiredFields: Array<keyof Subscription> = [
     "subscriptionName",
     "categoryName",
     "amount",
-    "dayofPayment",
+    ...(subscriptionData.frequency === "Monthly"
+      ? (["renewalDayOfMonth"] as const)
+      : subscriptionData.frequency === "Yearly"
+        ? (["renewalDate"] as const)
+        : []),
   ];
 
   const isFormValid = requiredFields.every((field) => {
@@ -51,10 +58,68 @@ function AddSubscription() {
   const navigate = useNavigate();
 
   const validationError = showError ? "This field is required" : "";
+
+  const handleAddSubcription = async () => {
+    const subscriptionToInsert = {
+      subscription_name: subscriptionData.subscriptionName,
+      category_name: subscriptionData.categoryName,
+      amount: subscriptionData.amount,
+      renewal_day_of_month: subscriptionData.renewalDayOfMonth,
+      renewal_date: subscriptionData.renewalDate,
+      expiry_date: subscriptionData.expiryDate,
+      frequency: subscriptionData.frequency,
+      priority: subscriptionData.priority,
+    };
+
+    if (isEditMode) {
+      const { error } = await supabase
+        .from("Subscriptions")
+        .update(subscriptionToInsert)
+        .eq("id", subscriptionId);
+      if (error) console.log("Error updating subscription:", error);
+    } else {
+      const { error } = await supabase
+        .from("Subscriptions")
+        .insert(subscriptionToInsert);
+      if (error) console.log("Error updating subscription:", error);
+    }
+
+    setShowError(false);
+  };
+
+  useEffect(() => {
+    if (subscriptionId) {
+      const fetchSubscription = async () => {
+        const { data, error } = await supabase
+          .from("Subscriptions")
+          .select("*")
+          .eq("id", subscriptionId)
+          .single();
+
+        if (data) {
+          setSubscriptionData({
+            subscriptionName: data.subscription_name,
+            categoryName: data.category_name,
+            amount: data.amount,
+            frequency: data.frequency,
+            renewalDayOfMonth: data.renewal_day_of_month,
+            renewalDate: data.renewal_date,
+            expiryDate: data.expiry_date,
+            priority: data.priority,
+          });
+        } else {
+          console.error("Error fetching subscription:", error);
+        }
+      };
+
+      fetchSubscription();
+    }
+  }, []);
+
   return (
     <div className="w-[60%] flex flex-col items-center gap-16">
       <h1 className="font-primary text-3xl font-semibold">Add Subscription</h1>
-      <form action="" className="w-full grid grid-cols-2 items-center gap-8">
+      <form action="" className="w-full grid grid-cols-2 gap-8 items-start">
         <InputField
           label="Subscription Name"
           name="subscriptionName"
@@ -79,13 +144,6 @@ function AddSubscription() {
           error={validationError}
         />
         <InputField
-          label="Day of Payment"
-          name="dayofPayment"
-          onChange={handleInputChange}
-          value={subscriptionData.dayofPayment}
-          error={validationError}
-        />
-        <InputField
           label="Date of Expiry"
           type="date"
           name="expiryDate"
@@ -99,6 +157,25 @@ function AddSubscription() {
           value={subscriptionData.frequency}
           name="frequency"
         />
+        {subscriptionData.frequency === "Monthly" && (
+          <InputField
+            label="Renewal Day of Month"
+            name="renewalDayOfMonth"
+            onChange={handleInputChange}
+            value={subscriptionData.renewalDayOfMonth}
+            error={validationError}
+          />
+        )}
+        {subscriptionData.frequency === "Yearly" && (
+          <InputField
+            label="Renewal Date"
+            type="date"
+            name="renewalDate"
+            onChange={handleInputChange}
+            value={subscriptionData.renewalDate}
+            error={validationError}
+          />
+        )}
         <Select
           label="Priority"
           options={["None", "Low", "Medium", "High"]}
@@ -108,27 +185,10 @@ function AddSubscription() {
         />
       </form>
       <Button
-        label="Add Subscription"
+        label={isEditMode ? "Update Subscription" : "Add Subscription"}
         onClick={async () => {
           if (isFormValid) {
-            const { data, error } = await supabase
-              .from("Subscriptions")
-              .insert({
-                subscription_name: subscriptionData.subscriptionName,
-                category_name: subscriptionData.categoryName,
-                amount: subscriptionData.amount,
-                day_of_payment: subscriptionData.dayofPayment,
-                expiry_date: subscriptionData.expiryDate,
-                frequency: subscriptionData.frequency,
-                priority: subscriptionData.priority,
-              });
-
-            if (error) {
-              console.error("Supabase insert failed:", error);
-            } else {
-              console.log("Inserted row:", data);
-            }
-            setShowError(false);
+            await handleAddSubcription();
             navigate("/");
           } else {
             setShowError(true);

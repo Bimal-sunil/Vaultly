@@ -4,14 +4,24 @@ import { daysBetween, nextMonthSameDay } from "../helper";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { categories } from "../data";
 
-function SubscriptionCard(props: Subscription) {
+type Props = Subscription & {
+  id: string;
+  onEdit?: (subscriptionId: string) => void;
+  onDelete?: (subscription: string) => void;
+};
+
+function SubscriptionCard(props: Props) {
   const {
+    id,
     subscriptionName,
     categoryName,
     amount,
     expiryDate,
-    dayofPayment,
+    renewalDayOfMonth,
+    renewalDate,
     frequency = "Monthly",
+    onEdit,
+    onDelete,
   } = props;
 
   const priorityBorder = {
@@ -40,6 +50,12 @@ function SubscriptionCard(props: Subscription) {
     return;
   }
 
+  const renewalDateObj = renewalDate
+    ? new Date(renewalDate)
+    : renewalDayOfMonth
+      ? nextMonthSameDay(renewalDayOfMonth)
+      : null;
+
   return (
     <div
       className={`flex items-center justify-between gap-[1rem] p-[2rem_2rem] bg-text rounded-[1rem] ${priorityBorder} shadow-[14px_14px_28px_#f5f0e9] w-full`}
@@ -62,10 +78,11 @@ function SubscriptionCard(props: Subscription) {
             >
               {categoryName}
             </p>
-            <p className="text-text-secondary">
-              Renews in{" "}
-              {daysBetween(new Date(), nextMonthSameDay(dayofPayment))}d
-            </p>
+            {renewalDateObj && (
+              <p className="text-text-secondary">
+                Renews in {daysBetween(new Date(), renewalDateObj)}d
+              </p>
+            )}
             {expiryDateObj && daysBetween(new Date(), expiryDateObj) <= 30 && (
               <p className="text-accent bg-accent-bg p-[0.2rem_0.5rem] rounded-[5px] w-fit">
                 Cancel by {customDate(expiryDateObj)}
@@ -80,8 +97,14 @@ function SubscriptionCard(props: Subscription) {
           <p className="text-text-secondary">{frequency}</p>
         </div>
         <div className="flex gap-[1rem]">
-          <FaPencilAlt className="text-dark cursor-pointer" />
-          <FaTrashAlt className="text-accent cursor-pointer" />
+          <FaPencilAlt
+            className="text-dark cursor-pointer"
+            onClick={() => onEdit?.(id)}
+          />
+          <FaTrashAlt
+            className="text-accent cursor-pointer"
+            onClick={() => onDelete?.(id)}
+          />
         </div>
       </div>
     </div>

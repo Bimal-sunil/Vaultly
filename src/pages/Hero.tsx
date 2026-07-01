@@ -70,14 +70,25 @@ function Hero() {
         <div className="flex flex-col gap-[1.5rem] w-full">
           {subscriptions.map((subscription) => (
             <SubscriptionCard
+              id={subscription["id"]}
               key={subscription["id"]}
               subscriptionName={subscription["subscription_name"]}
               categoryName={subscription["category_name"]}
               amount={subscription["amount"]}
               expiryDate={subscription["expiry_date"]}
-              dayofPayment={subscription["day_of_payment"]}
+              renewalDayOfMonth={subscription["renewal_day_of_month"]}
+              renewalDate={subscription["renewal_date"]}
               frequency={subscription["frequency"]}
               priority={subscription["priority"]}
+              onEdit={(id) => navigate(`/editSubscription/${id}`)}
+              onDelete={async (id) => {
+                const { error } = await supabase
+                  .from("Subscriptions")
+                  .delete()
+                  .eq("id", id);
+                if (error) console.error("Error deleting subscription:", error);
+                await fetchSubscriptionData();
+              }}
             />
           ))}
         </div>

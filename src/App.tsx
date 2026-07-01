@@ -10,6 +10,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Hero />} />
         <Route path="/addSubscription" element={<AddSubscription />} />
+        <Route
+          path="/editSubscription/:subscriptionId"
+          element={<AddSubscription />}
+        />
       </Routes>
     </main>
   );

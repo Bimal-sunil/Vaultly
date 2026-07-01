@@ -9,13 +9,33 @@ export type CategoryName =
   | "Education"
   | "Other";
 
-export type Subscription = {
+type BaseSubscription = {
   subscriptionName: string;
-  categoryName: `${CategoryName}`;
+  categoryName: CategoryName;
   amount: number;
-  expiryDate?: string;
-  // Which day of month
-  dayofPayment: number;
-  frequency?: "Monthly" | "Yearly" | "Weekly" | "Daily";
   priority?: "High" | "Medium" | "Low" | "None";
+  expiryDate?: string;
 };
+
+type MonthlySubscription = BaseSubscription & {
+  frequency: "Monthly";
+  renewalDayOfMonth: number;
+  renewalDate?: never;
+};
+
+type YearlySubscription = BaseSubscription & {
+  frequency: "Yearly";
+  renewalDate: string;
+  renewalDayOfMonth?: never;
+};
+
+type DailySubscription = BaseSubscription & {
+  frequency: "Daily";
+  renewalDate?: never;
+  renewalDayOfMonth?: never;
+};
+
+export type Subscription =
+  | MonthlySubscription
+  | YearlySubscription
+  | DailySubscription;
