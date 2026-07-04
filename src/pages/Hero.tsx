@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Button from "../components/Button";
-import { findTotalAmount, formatDate } from "../helper";
+import { findRenewingSoonCount, findTotalAmount, formatDate } from "../helper";
 import Card from "../components/Card";
 import { categories } from "../data";
 import Chip from "../components/Chip";
@@ -47,7 +47,7 @@ function Hero() {
         </h1>
         {/* TODO: Display active subscription count */}
         <p className="text-text-secondary">
-          4 Active . {formatDate(new Date())}
+          {subscriptions.length} Active . {formatDate(new Date())}
         </p>
         <p className="text-dark text-center">
           Track your monthly subscriptions and never miss a payment again.
@@ -57,20 +57,29 @@ function Hero() {
           onClick={() => navigate("/addSubscription")}
         />
       </section>
-      <section className="mt-[5rem] flex flex-col gap-[3rem] items-center">
-        <div className="w-fit grid grid-cols-3 gap-[3rem] place-items-center">
+      <section className="mt-20 flex flex-col gap-12 items-center">
+        <div className="w-fit grid grid-cols-4 gap-12 place-items-center">
           <Card
-            title="Monthly"
-            content={`₹${findTotalAmount(subscriptions.map((sub) => (sub["frequency"] === "Monthly" ? sub["amount"] : 0)))}`}
-            description="across 4 subscriptions,"
+            title="Daily"
+            content={`₹${findTotalAmount(subscriptions, "Daily")}`}
+            description={`at current spend`}
+          />
+          <Card
+            title="Monthly Est."
+            content={`₹${findTotalAmount(subscriptions, "Monthly")}`}
+            description={`at current spend`}
           />
           {/*TODO: Add proper calculation for yearly estimate*/}
           <Card
             title="Yearly Est."
-            content={`₹${findTotalAmount(subscriptions.map((sub) => (sub["frequency"] === "Monthly" ? sub["amount"] * 12 : sub["frequency"] === "Yearly" ? sub["amount"] : 0)))}`}
+            content={`₹${findTotalAmount(subscriptions, "Yearly")}`}
             description="at current spend"
           />
-          <Card title="Renewing Soon" content="2" description="within 7 days" />
+          <Card
+            title="Renewing Soon"
+            content={`${findRenewingSoonCount(subscriptions)}`}
+            description="within 7 days"
+          />
         </div>
         <div className="flex items-center gap-[1rem]">
           {categories.map((category) => (
