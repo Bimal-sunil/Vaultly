@@ -58,7 +58,7 @@ function Hero() {
         />
       </section>
       <section className="mt-20 flex flex-col gap-12 items-center">
-        <div className="w-fit grid grid-cols-4 gap-12 place-items-center">
+        <div className="w-fit grid grid-cols-3 gap-12 place-items-center">
           <Card
             title="Daily"
             content={`₹${findTotalAmount(subscriptions, "Daily")}`}

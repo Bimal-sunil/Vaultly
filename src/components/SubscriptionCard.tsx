@@ -1,8 +1,9 @@
 import React from "react";
 import type { Subscription } from "../types";
-import { daysBetween, nextMonthSameDay } from "../helper";
+import { nextMonthSameDay } from "../helper";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { categories } from "../data";
+import { differenceInCalendarDays, isPast } from "date-fns";
 
 type Props = Subscription & {
   id: string;
@@ -56,22 +57,28 @@ function SubscriptionCard(props: Props) {
       ? nextMonthSameDay(renewalDayOfMonth)
       : null;
 
+  const isCanceled = expiryDateObj && isPast(expiryDateObj);
+  const isExpiringSoon =
+    expiryDateObj &&
+    differenceInCalendarDays(expiryDateObj, new Date()) <= 30 &&
+    differenceInCalendarDays(expiryDateObj, new Date()) >= 0;
+
   return (
     <div
-      className={`flex items-center justify-between gap-[1rem] p-[2rem_2rem] bg-text rounded-[1rem] ${priorityBorder} shadow-[14px_14px_28px_#f5f0e9] w-full`}
+      className={`flex items-center justify-between gap-4 p-[2rem_2rem] bg-text rounded-2xl ${priorityBorder} shadow-[14px_14px_28px_#f5f0e9] w-full ${isCanceled ? "opacity-50" : ""}`}
     >
-      <div className="flex items-center gap-[4rem]">
+      <div className="flex items-center gap-16">
         <div
-          className="text-2xl p-[1rem] rounded-[15px]"
+          className="text-2xl p-4 rounded-[15px]"
           style={{ backgroundColor: selectedCategory?.color || "#ccc" }}
         >
           {selectedCategory?.icon}
         </div>
-        <div className="flex flex-col gap-[0.25rem]">
+        <div className="flex flex-col gap-1">
           <h3 className="font-semibold font-primary text-3xl text-dark">
             {subscriptionName}
           </h3>
-          <div className="w-full flex items-center gap-[1rem] flex-wrap">
+          <div className="w-full flex items-center gap-4 flex-wrap">
             <p
               className={`text-dark w-fit p-[0.2rem_0.5rem] rounded-[5px]`}
               style={{ backgroundColor: selectedCategory?.color || "#ccc" }}
@@ -80,23 +87,29 @@ function SubscriptionCard(props: Props) {
             </p>
             {renewalDateObj && (
               <p className="text-text-secondary">
-                Renews in {daysBetween(new Date(), renewalDateObj)}d
+                Renews in {differenceInCalendarDays(renewalDateObj, new Date())}
+                d
               </p>
             )}
-            {expiryDateObj && daysBetween(new Date(), expiryDateObj) <= 30 && (
+            {isExpiringSoon && (
               <p className="text-accent bg-accent-bg p-[0.2rem_0.5rem] rounded-[5px] w-fit">
                 Cancel by {customDate(expiryDateObj)}
+              </p>
+            )}
+            {isCanceled && (
+              <p className="text-accent bg-accent-bg p-[0.2rem_0.5rem] rounded-[5px] w-fit">
+                Canceled on {customDate(expiryDateObj)}
               </p>
             )}
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-[4rem]">
+      <div className="flex items-center justify-between gap-16">
         <div className="text-right">
           <p className="font-semibold font-primary text-3xl">₹{amount}</p>
           <p className="text-text-secondary">{frequency}</p>
         </div>
-        <div className="flex gap-[1rem]">
+        <div className="flex gap-4">
           <FaPencilAlt
             className="text-dark cursor-pointer"
             onClick={() => onEdit?.(id)}

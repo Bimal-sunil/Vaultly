@@ -1,3 +1,4 @@
+import { differenceInCalendarDays } from "date-fns";
 import type { Subscription } from "./types";
 
 export function formatDate(date: Date): string {
@@ -5,11 +6,6 @@ export function formatDate(date: Date): string {
     month: "long",
     year: "numeric",
   }).format(date);
-}
-
-export function daysBetween(date1: Date, date2: Date) {
-  const diffMs = Math.abs(date2.getTime() - date1.getTime());
-  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 }
 
 export function nextMonthSameDay(day: number) {
@@ -53,7 +49,11 @@ export function findTotalAmount(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function findRenewingSoonCount(subscriptions: any[]): number {
-  return subscriptions.filter(
-    (sub) => daysBetween(new Date(), new Date(sub["expiry_date"])) < 7,
+  const handleRenewSoon = (startDate: Date, endDate: Date): boolean => {
+    const diffInDays = differenceInCalendarDays(endDate, startDate);
+    return diffInDays >= 0 && diffInDays <= 7;
+  };
+  return subscriptions.filter((sub) =>
+    handleRenewSoon(new Date(), new Date(sub["expiry_date"])),
   ).length;
 }
