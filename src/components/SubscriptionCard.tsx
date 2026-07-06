@@ -1,6 +1,6 @@
 import React from "react";
 import type { Subscription } from "../types";
-import { nextMonthSameDay } from "../helper";
+import { nextGivenDay } from "../helper";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { categories } from "../data";
 import { differenceInCalendarDays, isPast } from "date-fns";
@@ -54,7 +54,7 @@ function SubscriptionCard(props: Props) {
   const renewalDateObj = renewalDate
     ? new Date(renewalDate)
     : renewalDayOfMonth
-      ? nextMonthSameDay(renewalDayOfMonth)
+      ? nextGivenDay(renewalDayOfMonth)
       : null;
 
   const isCanceled = expiryDateObj && isPast(expiryDateObj);

@@ -41,7 +41,7 @@ function Hero() {
 
   return (
     <div className="w-full">
-      <section className="flex flex-col gap-[1rem] items-center">
+      <section className="flex flex-col gap-4 items-center">
         <h1 className="text-4xl font-bold font-primary text-dark">
           Subscriptions
         </h1>
@@ -81,7 +81,7 @@ function Hero() {
             description="within 7 days"
           />
         </div>
-        <div className="flex items-center gap-[1rem]">
+        <div className="flex items-center gap-4">
           {categories.map((category) => (
             <Chip
               key={category.categoryname}
@@ -93,30 +93,37 @@ function Hero() {
             />
           ))}
         </div>
-        <div className="flex flex-col gap-[1.5rem] w-full">
-          {visibleSubscriptions.map((subscription) => (
-            <SubscriptionCard
-              id={subscription["id"]}
-              key={subscription["id"]}
-              subscriptionName={subscription["subscription_name"]}
-              categoryName={subscription["category_name"]}
-              amount={subscription["amount"]}
-              expiryDate={subscription["expiry_date"]}
-              renewalDayOfMonth={subscription["renewal_day_of_month"]}
-              renewalDate={subscription["renewal_date"]}
-              frequency={subscription["frequency"]}
-              priority={subscription["priority"]}
-              onEdit={(id) => navigate(`/editSubscription/${id}`)}
-              onDelete={async (id) => {
-                const { error } = await supabase
-                  .from("Subscriptions")
-                  .delete()
-                  .eq("id", id);
-                if (error) console.error("Error deleting subscription:", error);
-                await fetchSubscriptionData();
-              }}
-            />
-          ))}
+        <div className="flex flex-col gap-6 w-full px-40">
+          {visibleSubscriptions.length > 0 ? (
+            visibleSubscriptions.map((subscription) => (
+              <SubscriptionCard
+                id={subscription["id"]}
+                key={subscription["id"]}
+                subscriptionName={subscription["subscription_name"]}
+                categoryName={subscription["category_name"]}
+                amount={subscription["amount"]}
+                expiryDate={subscription["expiry_date"]}
+                renewalDayOfMonth={subscription["renewal_day_of_month"]}
+                renewalDate={subscription["renewal_date"]}
+                frequency={subscription["frequency"]}
+                priority={subscription["priority"]}
+                onEdit={(id) => navigate(`/editSubscription/${id}`)}
+                onDelete={async (id) => {
+                  const { error } = await supabase
+                    .from("Subscriptions")
+                    .delete()
+                    .eq("id", id);
+                  if (error)
+                    console.error("Error deleting subscription:", error);
+                  await fetchSubscriptionData();
+                }}
+              />
+            ))
+          ) : (
+            <h1 className="text-dark w-full text-center p-4 font-primary text-3xl font-semibold">
+              No subscriptions found
+            </h1>
+          )}
         </div>
       </section>
     </div>
