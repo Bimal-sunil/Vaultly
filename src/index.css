@@ -1,18 +1,13 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Sora:wght@100..800&display=swap");
 
 @theme {
-  --color-text: #fffaf3;
-  --color-text-secondary: #9aa6b2;
-  --color-text-accent: #f2eed7;
-  --color-bg: #fff8ec;
-  --color-dark: #1e2019;
-  --color-secondary: #fff8ec;
-  --color-accent: #ee2e31;
-  --color-accent-bg: #fcd9da;
+  --color-dark: #1b1b1b;
+  --dark-accent: #333333;
+  --color-light: #fbfbfb;
+  --color-accent: #d7ff00;
+  --color-accent-bg: #fcffeb;
 
-  --font-primary: "Fraunces", sans-serif;
-  --font-secondary: "Sora", sans-serif;
+  --font-primary: "Funnel Display", sans-serif;
 }
 
 *,
@@ -22,12 +17,12 @@
 }
 
 body {
-  background-color: var(--color-bg);
-  font-family: var(--font-secondary);
+  background-color: var(--color-dark);
+  font-family: var(--font-primary);
 }
 
 @media (max-width: 1024px) {
   :root {
-    font-size: 16px;
+    font-size: 14px;
   }
 }

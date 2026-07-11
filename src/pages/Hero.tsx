@@ -41,16 +41,12 @@ function Hero() {
 
   return (
     <div className="w-full">
-      <section className="flex flex-col gap-4 items-center">
-        <h1 className="text-4xl font-bold font-primary text-dark">
-          Subscriptions
+      <section className="flex flex-col gap-1">
+        <h1 className="text-4xl font-medium font-primary text-light">
+          Hello, User!
         </h1>
-        {/* TODO: Display active subscription count */}
-        <p className="text-text-secondary">
+        <p className="text-accent-bg uppercase">
           {subscriptions.length} Active . {formatDate(new Date())}
-        </p>
-        <p className="text-dark text-center">
-          Track your monthly subscriptions and never miss a payment again.
         </p>
         <Button
           label="+ Add Subscription"
