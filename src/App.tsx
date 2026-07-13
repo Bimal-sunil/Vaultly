@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Hero from "./pages/Hero";
 import AddSubscription from "./pages/AddSubscription";
+import NavBar from "./components/NavBar";
 function App() {
   return (
     <main className="app">
@@ -15,6 +16,7 @@ function App() {
           element={<AddSubscription />}
         />
       </Routes>
+      <NavBar />
     </main>
   );
 }

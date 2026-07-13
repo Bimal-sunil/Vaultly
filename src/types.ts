@@ -1,3 +1,5 @@
+import type { IconSvgElement } from "@hugeicons/react";
+
 export type CategoryName =
   | "All"
   | "Entertainment"
@@ -45,7 +47,7 @@ export type DayOfMonth =
 export interface CategoryItem {
   categoryname: CategoryName;
   color?: string;
-  icon?: string;
+  icon?: IconSvgElement;
 }
 
 type BaseSubscription = {

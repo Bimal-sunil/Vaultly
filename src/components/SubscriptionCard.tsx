@@ -3,7 +3,9 @@ import type { Subscription } from "../types";
 import { nextGivenDay } from "../helper";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { categories } from "../data";
-import { differenceInCalendarDays, isPast } from "date-fns";
+import { differenceInCalendarDays, isPast, startOfDay } from "date-fns";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { EllipsisVerticalIcon } from "@hugeicons/core-free-icons";
 
 type Props = Subscription & {
   id: string;
@@ -25,13 +27,6 @@ function SubscriptionCard(props: Props) {
     onDelete,
   } = props;
 
-  const priorityBorder = {
-    High: "border-l-4 border-accent-bg",
-    Medium: "border-l-4 border-yellow-500",
-    Low: "border-l-4 border-green-500",
-    None: "border-l-4 border-text-accent",
-  }[props.priority || "None"];
-
   const customDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-UK", {
       day: "2-digit",
@@ -43,82 +38,63 @@ function SubscriptionCard(props: Props) {
     (cat) => cat.categoryname === categoryName,
   );
 
-  const expiryDateObj = expiryDate && new Date(expiryDate);
-
-  // 2. Validate that the string was actually a valid date
+  let expiryDateObj: Date | null = expiryDate ? new Date(expiryDate) : null;
+  // Normalize invalid dates to null but don't early-return so hooks remain stable
   if (expiryDateObj && isNaN(expiryDateObj.getTime())) {
     console.error("Invalid date string received");
-    return;
+    expiryDateObj = null;
   }
 
-  const renewalDateObj = renewalDate
+  const renewalDateObj: Date | null = renewalDate
     ? new Date(renewalDate)
     : renewalDayOfMonth
       ? nextGivenDay(renewalDayOfMonth)
       : null;
 
-  const isCanceled = expiryDateObj && isPast(expiryDateObj);
-  const isExpiringSoon =
-    expiryDateObj &&
-    differenceInCalendarDays(expiryDateObj, new Date()) <= 30 &&
-    differenceInCalendarDays(expiryDateObj, new Date()) >= 0;
+  const now = startOfDay(new Date());
+  const isCanceled = expiryDateObj ? isPast(expiryDateObj) : false;
+  const toRenewal: number | null = renewalDateObj
+    ? differenceInCalendarDays(renewalDateObj, now)
+    : null;
+  const toExpire: number | null = expiryDateObj
+    ? differenceInCalendarDays(expiryDateObj, now)
+    : null;
+  const dueNext =
+    toExpire !== null && toExpire >= 0 && toExpire <= 7
+      ? toExpire
+      : toRenewal !== null && toRenewal >= 0 && toRenewal <= 7
+        ? toRenewal
+        : undefined;
 
   return (
     <div
-      className={`flex items-center justify-between gap-4 p-[2rem_2rem] bg-text rounded-2xl ${priorityBorder} shadow-[14px_14px_28px_#f5f0e9] w-full ${isCanceled ? "opacity-50" : ""}`}
+      className={`flex items-center justify-between border border-accent gap-4 p-3 bg-text rounded-[25px] w-full ${isCanceled ? "opacity-50" : ""}`}
     >
-      <div className="flex items-center gap-16">
-        <div
-          className="text-2xl p-4 rounded-[15px]"
-          style={{ backgroundColor: selectedCategory?.color || "#ccc" }}
-        >
-          {selectedCategory?.icon}
-        </div>
-        <div className="flex flex-col gap-1">
-          <h3 className="font-semibold font-primary text-3xl text-dark">
-            {subscriptionName}
-          </h3>
-          <div className="w-full flex items-center gap-4 flex-wrap">
-            <p
-              className={`text-dark w-fit p-[0.2rem_0.5rem] rounded-[5px]`}
-              style={{ backgroundColor: selectedCategory?.color || "#ccc" }}
-            >
-              {categoryName}
-            </p>
-            {renewalDateObj && (
-              <p className="text-text-secondary">
-                Renews in {differenceInCalendarDays(renewalDateObj, new Date())}
-                d
-              </p>
-            )}
-            {isExpiringSoon && (
-              <p className="text-accent bg-accent-bg p-[0.2rem_0.5rem] rounded-[5px] w-fit">
-                Cancel by {customDate(expiryDateObj)}
-              </p>
-            )}
-            {isCanceled && (
-              <p className="text-accent bg-accent-bg p-[0.2rem_0.5rem] rounded-[5px] w-fit">
-                Canceled on {customDate(expiryDateObj)}
-              </p>
-            )}
-          </div>
+      <div className="flex items-center gap-2 w-[60%]">
+        {selectedCategory?.icon && (
+          <HugeiconsIcon
+            icon={selectedCategory?.icon}
+            className="w-12 h-12 p-2 bg-accent-bg text-dark rounded-[10px]"
+          />
+        )}
+        <div className="flex flex-col">
+          <h3 className="h4 text-light">{subscriptionName}</h3>
+          {dueNext && (
+            <div className="w-full flex items-center gap-1 flex-wrap">
+              <span className="w-2 h-2 bg-[#EA2B1F] block rounded-[50%]"></span>
+              <p className="text-accent-bg small">Renews in {dueNext}d</p>
+            </div>
+          )}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-16">
+      <div className="flex items-center justify-between gap-2">
         <div className="text-right">
-          <p className="font-semibold font-primary text-3xl">₹{amount}</p>
-          <p className="text-text-secondary">{frequency}</p>
+          <p className="font-bold font-primary text-3xl text-light">
+            ₹{amount}
+          </p>
+          <p className="text-accent-bg">{frequency}</p>
         </div>
-        <div className="flex gap-4">
-          <FaPencilAlt
-            className="text-dark cursor-pointer"
-            onClick={() => onEdit?.(id)}
-          />
-          <FaTrashAlt
-            className="text-accent cursor-pointer"
-            onClick={() => onDelete?.(id)}
-          />
-        </div>
+        <HugeiconsIcon icon={EllipsisVerticalIcon} className="text-accent" />
       </div>
     </div>
   );

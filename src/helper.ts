@@ -61,10 +61,10 @@ export function findTotalAmount(
     }
   }
 
-  if (estimate === "Daily") return (totalAmount / 365).toFixed(2);
-  if (estimate === "Monthly") return (totalAmount / 12).toFixed(2);
+  if (estimate === "Daily") return (totalAmount / 365).toFixed(1);
+  if (estimate === "Monthly") return (totalAmount / 12).toFixed(1);
   // estimate === "Yearly"
-  return totalAmount.toFixed(2);
+  return totalAmount.toFixed(1);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,3 +77,19 @@ export function findRenewingSoonCount(subscriptions: any[]): number {
     handleRenewSoon(new Date(), new Date(sub["expiry_date"])),
   ).length;
 }
+
+export const formatAmount = (amount: number) => {
+  if (amount < 10_000) {
+    return amount.toLocaleString("en-IN");
+  }
+
+  if (amount < 1_00_000) {
+    return `${(amount / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  }
+
+  if (amount < 1_00_00_000) {
+    return `${(amount / 1_00_000).toFixed(1).replace(/\.0$/, "")}L`;
+  }
+
+  return `${(amount / 1_00_00_000).toFixed(1).replace(/\.0$/, "")}Cr`;
+};

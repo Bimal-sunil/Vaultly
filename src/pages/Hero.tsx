@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Button from "../components/Button";
-import { findRenewingSoonCount, findTotalAmount, formatDate } from "../helper";
+import {
+  findRenewingSoonCount,
+  findTotalAmount,
+  formatAmount,
+  formatDate,
+} from "../helper";
 import Card from "../components/Card";
 import { categories } from "../data";
 import Chip from "../components/Chip";
@@ -8,6 +13,7 @@ import SubscriptionCard from "../components/SubscriptionCard";
 import { supabase } from "../../utils/supabase";
 import { useNavigate } from "react-router-dom";
 import type { CategoryName } from "../types";
+import CalendarStrip from "../components/CalendarStrip";
 
 function Hero() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,35 +46,30 @@ function Hero() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full">
-      <section className="flex flex-col gap-1">
-        <h1 className="text-4xl font-medium font-primary text-light">
-          Hello, User!
-        </h1>
-        <p className="text-accent-bg uppercase">
+    <div className="w-full flex flex-col gap-8">
+      <section className="flex flex-col gap-">
+        <h1 className="h1 text-light">Hello, User!</h1>
+        <p className="text-accent-bg uppercase p">
           {subscriptions.length} Active . {formatDate(new Date())}
         </p>
-        <Button
-          label="+ Add Subscription"
-          onClick={() => navigate("/addSubscription")}
-        />
       </section>
-      <section className="mt-20 flex flex-col gap-12 items-center">
-        <div className="w-fit grid grid-cols-3 gap-12 place-items-center">
+      <CalendarStrip date={new Date()} />
+      <section className="flex flex-col gap-12 items-center">
+        <div className="w-fit grid grid-cols-2 gap-2 place-items-center">
           <Card
             title="Daily"
-            content={`₹${findTotalAmount(subscriptions, "Daily")}`}
+            content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Daily")))}`}
             description={`at current spend`}
           />
           <Card
             title="Monthly Est."
-            content={`₹${findTotalAmount(subscriptions, "Monthly")}`}
+            content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Monthly")))}`}
             description={`at current spend`}
           />
           {/*TODO: Add proper calculation for yearly estimate*/}
           <Card
             title="Yearly Est."
-            content={`₹${findTotalAmount(subscriptions, "Yearly")}`}
+            content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Yearly")))}`}
             description="at current spend"
           />
           <Card
@@ -77,51 +78,50 @@ function Hero() {
             description="within 7 days"
           />
         </div>
-        <div className="flex items-center gap-4">
-          {categories.map((category) => (
-            <Chip
-              key={category.categoryname}
-              label={category.categoryname}
-              onClick={() => {
-                setSelectedCategory(category.categoryname);
-              }}
-              selected={selectedCategory === category.categoryname}
-            />
-          ))}
-        </div>
-        <div className="flex flex-col gap-6 w-full px-40">
-          {visibleSubscriptions.length > 0 ? (
-            visibleSubscriptions.map((subscription) => (
-              <SubscriptionCard
-                id={subscription["id"]}
-                key={subscription["id"]}
-                subscriptionName={subscription["subscription_name"]}
-                categoryName={subscription["category_name"]}
-                amount={subscription["amount"]}
-                expiryDate={subscription["expiry_date"]}
-                renewalDayOfMonth={subscription["renewal_day_of_month"]}
-                renewalDate={subscription["renewal_date"]}
-                frequency={subscription["frequency"]}
-                priority={subscription["priority"]}
-                onEdit={(id) => navigate(`/editSubscription/${id}`)}
-                onDelete={async (id) => {
-                  const { error } = await supabase
-                    .from("Subscriptions")
-                    .delete()
-                    .eq("id", id);
-                  if (error)
-                    console.error("Error deleting subscription:", error);
-                  await fetchSubscriptionData();
-                }}
-              />
-            ))
-          ) : (
-            <h1 className="text-dark w-full text-center p-4 font-primary text-3xl font-semibold">
-              No subscriptions found
-            </h1>
-          )}
-        </div>
       </section>
+      <div className="flex items-start gap-2 overflow-x-scroll">
+        {categories.map((category) => (
+          <Chip
+            key={category.categoryname}
+            label={category.categoryname}
+            onClick={() => {
+              setSelectedCategory(category.categoryname);
+            }}
+            selected={selectedCategory === category.categoryname}
+          />
+        ))}
+      </div>
+      <div className="flex flex-col gap-6 w-full">
+        {visibleSubscriptions.length > 0 ? (
+          visibleSubscriptions.map((subscription) => (
+            <SubscriptionCard
+              id={subscription["id"]}
+              key={subscription["id"]}
+              subscriptionName={subscription["subscription_name"]}
+              categoryName={subscription["category_name"]}
+              amount={subscription["amount"]}
+              expiryDate={subscription["expiry_date"]}
+              renewalDayOfMonth={subscription["renewal_day_of_month"]}
+              renewalDate={subscription["renewal_date"]}
+              frequency={subscription["frequency"]}
+              priority={subscription["priority"]}
+              onEdit={(id) => navigate(`/editSubscription/${id}`)}
+              onDelete={async (id) => {
+                const { error } = await supabase
+                  .from("Subscriptions")
+                  .delete()
+                  .eq("id", id);
+                if (error) console.error("Error deleting subscription:", error);
+                await fetchSubscriptionData();
+              }}
+            />
+          ))
+        ) : (
+          <h1 className="text-dark w-full text-center p-4 font-primary text-3xl font-semibold">
+            No subscriptions found
+          </h1>
+        )}
+      </div>
     </div>
   );
 }
