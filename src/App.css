@@ -10,3 +10,34 @@
   overflow-x: hidden;
   position: relative;
 }
+
+.menu-content {
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+  animation: scaleIn 120ms ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.menu-content[data-state="closed"] {
+  animation: scaleOut 100ms ease-in;
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}

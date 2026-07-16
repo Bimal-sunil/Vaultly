@@ -80,3 +80,5 @@ export type Subscription =
   | MonthlySubscription
   | YearlySubscription
   | DailySubscription;
+
+export type NavLink = { icon: IconSvgElement; to: string };

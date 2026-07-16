@@ -1,4 +1,11 @@
-import type { CategoryItem } from "./types";
+import {
+  Home03Icon,
+  Chart01Icon,
+  PlusSignIcon,
+  Chatting01Icon,
+  Settings03Icon,
+} from "@hugeicons/core-free-icons";
+import type { CategoryItem, NavLink } from "./types";
 import {
   Film02Icon,
   ZapIcon,
@@ -20,4 +27,27 @@ export const categories: CategoryItem[] = [
   { categoryname: "Finance", color: "#D0C4A8", icon: MoneyBag02Icon },
   { categoryname: "Education", color: "#C6D0DB", icon: Book03Icon },
   { categoryname: "Other", color: "#D2D2D2", icon: PinIcon },
+];
+
+export const navlinks: NavLink[] = [
+  {
+    icon: Home03Icon,
+    to: "/",
+  },
+  {
+    icon: Chart01Icon,
+    to: "/insights",
+  },
+  {
+    icon: PlusSignIcon,
+    to: "/addSubscription",
+  },
+  {
+    icon: Chatting01Icon,
+    to: "/pluto",
+  },
+  {
+    icon: Settings03Icon,
+    to: "/settings",
+  },
 ];

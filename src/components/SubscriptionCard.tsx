@@ -1,16 +1,21 @@
 import React from "react";
 import type { Subscription } from "../types";
 import { nextGivenDay } from "../helper";
-import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { categories } from "../data";
 import { differenceInCalendarDays, isPast, startOfDay } from "date-fns";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { EllipsisVerticalIcon } from "@hugeicons/core-free-icons";
+import {
+  Delete02Icon,
+  Edit03Icon,
+  EllipsisVerticalIcon,
+} from "@hugeicons/core-free-icons";
+import { DropdownMenu } from "radix-ui";
+import MenuButton from "./MenuButton";
 
 type Props = Subscription & {
   id: string;
   onEdit?: (subscriptionId: string) => void;
-  onDelete?: (subscription: string) => void;
+  onDelete?: (subscriptionId: string) => void;
 };
 
 function SubscriptionCard(props: Props) {
@@ -68,7 +73,7 @@ function SubscriptionCard(props: Props) {
 
   return (
     <div
-      className={`flex items-center justify-between border border-accent gap-4 p-3 bg-text rounded-[25px] w-full ${isCanceled ? "opacity-50" : ""}`}
+      className={`flex items-center justify-between bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)] gap-4 p-3 bg-text rounded-[25px] w-full ${isCanceled ? "opacity-50" : ""}`}
     >
       <div className="flex items-center gap-2 w-[60%]">
         {selectedCategory?.icon && (
@@ -94,7 +99,29 @@ function SubscriptionCard(props: Props) {
           </p>
           <p className="text-accent-bg">{frequency}</p>
         </div>
-        <HugeiconsIcon icon={EllipsisVerticalIcon} className="text-accent" />
+        <MenuButton
+          trigger={
+            <HugeiconsIcon
+              icon={EllipsisVerticalIcon}
+              className="text-accent"
+            />
+          }
+        >
+          <DropdownMenu.Item
+            className="flex items-center gap-2 text-dark py-2"
+            onClick={() => onEdit?.(id)}
+          >
+            <HugeiconsIcon icon={Edit03Icon} className="w-5 h-5" />
+            Edit
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            className="flex items-center gap-2 text-[#EA2B1F]"
+            onClick={() => onDelete?.(id)}
+          >
+            <HugeiconsIcon icon={Delete02Icon} className="w-5 h-5" />
+            Delete
+          </DropdownMenu.Item>
+        </MenuButton>
       </div>
     </div>
   );
