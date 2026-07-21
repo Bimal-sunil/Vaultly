@@ -1,6 +1,6 @@
 .app {
   width: 100%;
-  min-height: 100dvh;
+  min-height: 100vh;
   padding: 2rem 2rem 7rem 2rem;
   display: flex;
   flex-direction: column;
@@ -8,6 +8,7 @@
   box-sizing: border-box;
   gap: 2rem;
   overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
 }
 

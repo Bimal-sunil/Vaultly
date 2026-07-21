@@ -1,5 +1,4 @@
 import { eachDayOfInterval, endOfWeek, isToday, startOfWeek } from "date-fns";
-import React from "react";
 import CalendarDate from "./CalendarDate";
 
 type Props = {

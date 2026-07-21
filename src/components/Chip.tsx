@@ -1,5 +1,3 @@
-import React from "react";
-
 type Props = {
   label: string;
   selected?: boolean;
@@ -11,7 +9,10 @@ function Chip(props: Props) {
   return (
     <button
       className={`cursor-pointer p-[0.5rem_1rem] border rounded-[50px] border-accent ${selected ? "bg-accent text-dark" : "bg-transparent text-accent"}`}
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick?.();
+      }}
     >
       {label}
     </button>

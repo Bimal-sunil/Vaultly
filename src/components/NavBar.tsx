@@ -1,5 +1,4 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import React from "react";
 import { NavLink } from "react-router-dom";
 import { navlinks } from "../data";
 

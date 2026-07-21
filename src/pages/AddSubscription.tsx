@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import InputField from "../components/InputField";
 import type { Subscription } from "../types";
-import Select from "../components/Select";
 import { categories } from "../data";
 import Button from "../components/Button";
 import { supabase } from "../../utils/supabase";
 import { useNavigate, useParams } from "react-router-dom";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft02Icon } from "@hugeicons/core-free-icons";
+import ChipContainer from "../components/ChipContainer";
 
 function AddSubscription() {
   const [showError, setShowError] = useState<boolean>(false);
@@ -117,45 +119,31 @@ function AddSubscription() {
   }, []);
 
   return (
-    <div className="w-[60%] flex flex-col items-center gap-16">
-      <h1 className="font-primary text-3xl font-semibold">Add Subscription</h1>
-      <form action="" className="w-full grid grid-cols-2 gap-8 items-start">
+    <div className="w-full flex flex-col gap-8">
+      <h1 className="font-primary text-3xl font-semibold flex items-center gap-4 text-light">
+        <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent" />
+        Add Subscription
+      </h1>
+      <form action="" className="w-full flex flex-col gap-8 items-center">
+        <ChipContainer
+          options={categories
+            .filter((category) => category.categoryname !== "All")
+            .map((category) => category.categoryname)}
+          onChange={(value) => handleSelectChange("categoryName", value)}
+          value={subscriptionData.categoryName}
+        />
+        <ChipContainer
+          options={["Daily", "Monthly", "Yearly"]}
+          className="justify-center"
+          onChange={(value) => handleSelectChange("frequency", value)}
+          value={subscriptionData.frequency}
+        />
         <InputField
           label="Subscription Name"
           name="subscriptionName"
           onChange={handleInputChange}
           value={subscriptionData.subscriptionName}
           error={validationError}
-        />
-        <InputField
-          label="Amount"
-          name="amount"
-          onChange={handleInputChange}
-          value={subscriptionData.amount}
-          type="number"
-          error={validationError}
-        />
-        <Select
-          label="Category"
-          options={categories.map((category) => category.categoryname)}
-          onChange={handleSelectChange}
-          value={subscriptionData.categoryName}
-          name="categoryName"
-          error={validationError}
-        />
-        <InputField
-          label="Date of Expiry"
-          type="date"
-          name="expiryDate"
-          onChange={handleInputChange}
-          value={subscriptionData.expiryDate}
-        />
-        <Select
-          label="Frequency"
-          options={["Daily", "Monthly", "Yearly"]}
-          onChange={handleSelectChange}
-          value={subscriptionData.frequency}
-          name="frequency"
         />
         {subscriptionData.frequency === "Monthly" && (
           <InputField
@@ -176,12 +164,18 @@ function AddSubscription() {
             error={validationError}
           />
         )}
-        <Select
-          label="Priority"
-          options={["None", "Low", "Medium", "High"]}
-          onChange={handleSelectChange}
+        <InputField
+          label="Date of Expiry"
+          type="date"
+          name="expiryDate"
+          onChange={handleInputChange}
+          value={subscriptionData.expiryDate}
+        />
+        <ChipContainer
+          options={["Low", "Medium", "High"]}
+          className="justify-center"
+          onChange={(value) => handleSelectChange("priority", value)}
           value={subscriptionData.priority}
-          name="priority"
         />
       </form>
       <Button

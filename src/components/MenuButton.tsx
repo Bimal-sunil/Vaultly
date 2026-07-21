@@ -1,5 +1,11 @@
 import React from "react";
-import { DropdownMenu } from "radix-ui";
+import {
+  MenuTrigger,
+  Menu,
+  MenuSection,
+  Button,
+  Popover,
+} from "react-aria-components";
 
 type Props = {
   trigger: React.ReactNode;
@@ -9,18 +15,16 @@ type Props = {
 function MenuButton(props: Props) {
   const { children, trigger } = props;
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>{trigger}</DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="p-4 bg-accent-bg rounded-[10px] menu-content"
-          align="end"
-          sideOffset={8}
-        >
-          {children}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+    <MenuTrigger>
+      <Button>{trigger}</Button>
+      <Popover placement="bottom end">
+        <Menu>
+          <MenuSection className="p-4 bg-accent-bg rounded-[10px] menu-content">
+            {children}
+          </MenuSection>
+        </Menu>
+      </Popover>
+    </MenuTrigger>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   findRenewingSoonCount,
   findTotalAmount,
@@ -7,12 +7,12 @@ import {
 } from "../helper";
 import Card from "../components/Card";
 import { categories } from "../data";
-import Chip from "../components/Chip";
 import SubscriptionCard from "../components/SubscriptionCard";
 import { supabase } from "../../utils/supabase";
 import { useNavigate } from "react-router-dom";
-import type { CategoryName } from "../types";
+import type { CategoryItem, CategoryName } from "../types";
 import CalendarStrip from "../components/CalendarStrip";
+import ChipContainer from "../components/ChipContainer";
 
 function Hero() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,18 +78,13 @@ function Hero() {
           />
         </div>
       </section>
-      <div className="flex items-start gap-2 overflow-x-scroll">
-        {categories.map((category) => (
-          <Chip
-            key={category.categoryname}
-            label={category.categoryname}
-            onClick={() => {
-              setSelectedCategory(category.categoryname);
-            }}
-            selected={selectedCategory === category.categoryname}
-          />
-        ))}
-      </div>
+      <ChipContainer
+        options={categories.map((category) => category.categoryname)}
+        onChange={(selectedItem: string) => {
+          setSelectedCategory(selectedItem as CategoryItem["categoryname"]);
+        }}
+        value={selectedCategory}
+      />
       <div className="flex flex-col gap-6 w-full">
         {visibleSubscriptions.length > 0 ? (
           visibleSubscriptions.map((subscription) => (

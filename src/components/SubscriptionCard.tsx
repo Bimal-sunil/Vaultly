@@ -1,5 +1,4 @@
-import React from "react";
-import type { Subscription } from "../types";
+import type { DayOfMonth, Subscription } from "../types";
 import { nextGivenDay } from "../helper";
 import { categories } from "../data";
 import { differenceInCalendarDays, isPast, startOfDay } from "date-fns";
@@ -9,8 +8,8 @@ import {
   Edit03Icon,
   EllipsisVerticalIcon,
 } from "@hugeicons/core-free-icons";
-import { DropdownMenu } from "radix-ui";
 import MenuButton from "./MenuButton";
+import { MenuItem } from "react-aria-components";
 
 type Props = Subscription & {
   id: string;
@@ -32,13 +31,6 @@ function SubscriptionCard(props: Props) {
     onDelete,
   } = props;
 
-  const customDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-UK", {
-      day: "2-digit",
-      month: "short",
-    }).format(date);
-  };
-
   const selectedCategory = categories.find(
     (cat) => cat.categoryname === categoryName,
   );
@@ -53,7 +45,7 @@ function SubscriptionCard(props: Props) {
   const renewalDateObj: Date | null = renewalDate
     ? new Date(renewalDate)
     : renewalDayOfMonth
-      ? nextGivenDay(renewalDayOfMonth)
+      ? nextGivenDay(renewalDayOfMonth as DayOfMonth)
       : null;
 
   const now = startOfDay(new Date());
@@ -107,20 +99,20 @@ function SubscriptionCard(props: Props) {
             />
           }
         >
-          <DropdownMenu.Item
-            className="flex items-center gap-2 text-dark py-2"
-            onClick={() => onEdit?.(id)}
+          <MenuItem
+            className="flex items-center gap-2 text-dark py-2 w-full text-left"
+            onAction={() => onEdit?.(id)}
           >
             <HugeiconsIcon icon={Edit03Icon} className="w-5 h-5" />
             Edit
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            className="flex items-center gap-2 text-[#EA2B1F]"
-            onClick={() => onDelete?.(id)}
+          </MenuItem>
+          <MenuItem
+            className="flex items-center gap-2 text-[#EA2B1F] w-full text-left"
+            onAction={() => onDelete?.(id)}
           >
             <HugeiconsIcon icon={Delete02Icon} className="w-5 h-5" />
             Delete
-          </DropdownMenu.Item>
+          </MenuItem>
         </MenuButton>
       </div>
     </div>
