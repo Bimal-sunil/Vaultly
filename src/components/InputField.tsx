@@ -13,6 +13,9 @@ type Props = {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   error?: string;
+  //Number input props
+  min?: number;
+  max?: number;
 };
 
 function InputField(props: Props) {
@@ -24,9 +27,12 @@ function InputField(props: Props) {
     value = "",
     onChange,
     error,
+    min,
+    max,
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <label
       htmlFor=""
@@ -44,6 +50,8 @@ function InputField(props: Props) {
             className={`outline-0 w-full h-full text-light h4 [&::-webkit-calendar-picker-indicator]:hidden`}
             name={name}
             onChange={onChange}
+            min={min}
+            max={max}
           />
           {type === "date" && (
             <HugeiconsIcon

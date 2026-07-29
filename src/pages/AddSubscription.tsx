@@ -8,6 +8,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft02Icon } from "@hugeicons/core-free-icons";
 import ChipContainer from "../components/ChipContainer";
+import DatePicker from "../components/DatePicker";
+import { parseDate } from "@internationalized/date";
+import HeroInput from "../components/HeroInput";
 
 function AddSubscription() {
   const [showError, setShowError] = useState<boolean>(false);
@@ -51,7 +54,7 @@ function AddSubscription() {
     });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (name: string, value: any) => {
     setSubscriptionData((prevData) => {
       return { ...prevData, [name]: value };
     });
@@ -132,6 +135,17 @@ function AddSubscription() {
           onChange={(value) => handleSelectChange("categoryName", value)}
           value={subscriptionData.categoryName}
         />
+        <HeroInput
+          icon={
+            categories.find(
+              (category) =>
+                category.categoryname === subscriptionData.categoryName,
+            )?.icon
+          }
+          value={subscriptionData.amount}
+          onChange={(value) => handleSelectChange("amount", value)}
+          label="Amount"
+        />
         <ChipContainer
           options={["Daily", "Monthly", "Yearly"]}
           className="justify-center"
@@ -147,6 +161,9 @@ function AddSubscription() {
         />
         {subscriptionData.frequency === "Monthly" && (
           <InputField
+            type="number"
+            min={1}
+            max={31}
             label="Renewal Day of Month"
             name="renewalDayOfMonth"
             onChange={handleInputChange}
@@ -155,21 +172,28 @@ function AddSubscription() {
           />
         )}
         {subscriptionData.frequency === "Yearly" && (
-          <InputField
+          <DatePicker
             label="Renewal Date"
-            type="date"
-            name="renewalDate"
-            onChange={handleInputChange}
-            value={subscriptionData.renewalDate}
-            error={validationError}
+            onChange={(value) =>
+              handleSelectChange("renewalDate", value ? value.toString() : "")
+            }
+            value={
+              subscriptionData.renewalDate
+                ? parseDate(subscriptionData.renewalDate)
+                : null
+            }
           />
         )}
-        <InputField
+        <DatePicker
           label="Date of Expiry"
-          type="date"
-          name="expiryDate"
-          onChange={handleInputChange}
-          value={subscriptionData.expiryDate}
+          onChange={(value) =>
+            handleSelectChange("expiryDate", value ? value.toString() : "")
+          }
+          value={
+            subscriptionData.expiryDate
+              ? parseDate(subscriptionData.expiryDate)
+              : null
+          }
         />
         <ChipContainer
           options={["Low", "Medium", "High"]}

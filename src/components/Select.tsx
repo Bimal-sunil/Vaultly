@@ -1,51 +1,83 @@
-import { useState } from "react";
-import { FaChevronDown } from "react-icons/fa";
-import ErrorMessage from "./ErrorMessage";
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import React, { useRef } from "react";
+import {
+  Select as AriaSelect,
+  Button,
+  FieldError,
+  Label,
+  Popover,
+  SelectValue,
+  Text,
+  ListBox,
+  ListBoxItem as SelectItem,
+  type SelectProps,
+} from "react-aria-components";
 
-type Props = {
+type Props<T extends object> = SelectProps<T> & {
   label?: string;
-  options: string[];
-  value?: string;
-  onChange?: (name: string, value: string) => void;
-  name: string;
-  error?: string;
+  description?: string;
+  errorMessage?: string;
+  items?: Iterable<T>;
+  children: React.ReactNode | ((item: T) => React.ReactNode);
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-function Select(props: Props) {
-  const [selectOpen, setSelectOpen] = useState<boolean>(false);
-  const { options, label, onChange, value, name, error } = props;
+function Select<T extends object>(props: Props<T>) {
+  const {
+    label,
+    description,
+    children,
+    errorMessage,
+    items,
+    className,
+    style,
+    onOpenChange,
+    ...restProps
+  } = props;
+
+  const listboxRef = useRef<HTMLDivElement>(null);
+
+  const handleOpenChange = (isOpen: boolean) => {
+    onOpenChange?.(isOpen);
+    if (isOpen) {
+      requestAnimationFrame(() => {
+        const listbox = listboxRef.current;
+        if (listbox) {
+          const selected = listbox.querySelector(
+            '[aria-selected="true"]',
+          ) as HTMLElement | null;
+          if (selected) {
+            selected.scrollIntoView({ block: "center" });
+          }
+        }
+      });
+    }
+  };
+
   return (
-    <label htmlFor="" className="flex flex-col w-full relative min-w-[30%]">
-      {label}
-      <button
-        className={`w-full border p-[0.75rem_1rem] rounded-xl h-12 text-left cursor-pointer ${error ? "border-accent" : "border-dark"}`}
-        onClick={(e) => {
-          e.preventDefault();
-          setSelectOpen(!selectOpen);
-        }}
-      >
-        {value}
-        <FaChevronDown className="float-right" />
-      </button>
-      {selectOpen && (
-        <div className="w-full flex flex-col border border-dark rounded-xl absolute bg-bg top-20 z-100">
-          {options.map((option) => (
-            <button
-              className="w-full text-left cursor-pointer hover:bg-dark hover:text-secondary p-3"
-              onClick={(e) => {
-                e.preventDefault();
-                onChange?.(name, option);
-                setSelectOpen(false);
-              }}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
-      {error && <ErrorMessage message={error} />}
-    </label>
+    <AriaSelect
+      className={className}
+      style={style}
+      onOpenChange={handleOpenChange}
+      {...restProps}
+    >
+      {label && <Label>{label}</Label>}
+      <Button className="flex items-center gap-2 px-2 py-1 border border-dark rounded-xl">
+        <SelectValue />
+        <HugeiconsIcon icon={ArrowDown01Icon} />
+      </Button>
+      {description && <Text>{description}</Text>}
+      <FieldError>{errorMessage}</FieldError>
+      <Popover className="select-popover w-(--trigger-width)">
+        <ListBox ref={listboxRef} className="select-listbox" items={items}>
+          {children}
+        </ListBox>
+      </Popover>
+    </AriaSelect>
   );
 }
 
 export default Select;
+export { SelectItem };

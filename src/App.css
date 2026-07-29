@@ -42,3 +42,21 @@
     transform: scale(0.95);
   }
 }
+
+.select-popover {
+  background-color: var(--color-accent-bg);
+  border: 1px solid rgba(27, 27, 27, 0.15);
+  border-radius: 12px;
+  padding: 0.25rem;
+  z-index: 60;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: var(--trigger-width);
+  min-width: var(--trigger-width);
+}
+
+.select-listbox {
+  max-height: 200px;
+  overflow-y: auto;
+  outline: none;
+}
+

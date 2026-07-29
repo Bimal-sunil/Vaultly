@@ -8,7 +8,7 @@ function Button(props: Props) {
   return (
     <button
       type="button"
-      className="bg-dark text-text p-[1rem_2rem] rounded-[10px] font-secondary cursor-pointer hover:bg-accent-bg hover:text-dark transition-all duration-300"
+      className="bg-accent text-dark p-[1rem_2rem] rounded-[999px] h5 cursor-pointer hover:bg-accent-bg transition-all duration-300"
       onClick={onClick}
     >
       {label}

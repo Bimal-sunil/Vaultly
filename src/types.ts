@@ -61,19 +61,19 @@ type BaseSubscription = {
 type MonthlySubscription = BaseSubscription & {
   frequency: "Monthly";
   renewalDayOfMonth: number;
-  renewalDate?: never;
+  renewalDate?: string;
 };
 
 type YearlySubscription = BaseSubscription & {
   frequency: "Yearly";
   renewalDate: string;
-  renewalDayOfMonth?: never;
+  renewalDayOfMonth?: number;
 };
 
 type DailySubscription = BaseSubscription & {
   frequency: "Daily";
-  renewalDate?: never;
-  renewalDayOfMonth?: never;
+  renewalDate?: string;
+  renewalDayOfMonth?: number;
 };
 
 export type Subscription =

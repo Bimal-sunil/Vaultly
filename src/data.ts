@@ -4,6 +4,7 @@ import {
   PlusSignIcon,
   Chatting01Icon,
   Settings03Icon,
+  LeftToRightListDashIcon,
 } from "@hugeicons/core-free-icons";
 import type { CategoryItem, NavLink } from "./types";
 import {
@@ -35,19 +36,19 @@ export const navlinks: NavLink[] = [
     to: "/",
   },
   {
-    icon: Chart01Icon,
-    to: "/insights",
+    icon: LeftToRightListDashIcon,
+    to: "/subscriptions",
   },
   {
     icon: PlusSignIcon,
     to: "/addSubscription",
   },
   {
-    icon: Chatting01Icon,
-    to: "/pluto",
+    icon: Chart01Icon,
+    to: "/insights",
   },
   {
-    icon: Settings03Icon,
-    to: "/settings",
+    icon: Chatting01Icon,
+    to: "/pluto",
   },
 ];
