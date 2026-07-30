@@ -4,6 +4,7 @@ import {
   findTotalAmount,
   formatAmount,
   formatDate,
+  syncExpiredSubscriptions,
 } from "../helper";
 import Card from "../components/Card";
 import { categories } from "../data";
@@ -24,7 +25,10 @@ function Hero() {
       console.error("Error fetching subscription data:", error);
       return;
     }
-    setSubscriptions(data);
+    if (data) {
+      const syncedData = await syncExpiredSubscriptions(data);
+      setSubscriptions(syncedData);
+    }
   };
 
   useEffect(() => {
@@ -48,28 +52,25 @@ function Hero() {
     <div className="w-full flex flex-col gap-8">
       <section className="flex flex-col gap-">
         <h1 className="h1 text-light">Hello, User!</h1>
-        <p className="text-accent-bg uppercase p">
-          {subscriptions.length} Active . {formatDate(new Date())}
-        </p>
+        <p className="text-accent-bg uppercase p">{formatDate(new Date())}</p>
       </section>
       <CalendarStrip date={new Date()} />
       <section className="flex flex-col gap-12 items-center">
-        <div className="w-fit grid grid-cols-2 gap-2 place-items-center">
+        <div className="w-full grid grid-cols-2 gap-3 place-items-center">
           <Card
-            title="Daily"
-            content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Daily")))}`}
-            description={`at current spend`}
-          />
-          <Card
-            title="Monthly Est."
+            title="This Month"
             content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Monthly")))}`}
-            description={`at current spend`}
+            description={`${formatDate(new Date())}`}
           />
-          {/*TODO: Add proper calculation for yearly estimate*/}
           <Card
             title="Yearly Est."
             content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Yearly")))}`}
-            description="at current spend"
+            description={`at current spend`}
+          />
+          <Card
+            title="Active"
+            content={`${subscriptions.filter((sub) => sub.is_active !== false && sub.isActive !== false).length}`}
+            description="subscriptions"
           />
           <Card
             title="Renewing Soon"
@@ -91,6 +92,7 @@ function Hero() {
             <SubscriptionCard
               id={subscription["id"]}
               key={subscription["id"]}
+              isActive={subscription["is_active"]}
               subscriptionName={subscription["subscription_name"]}
               categoryName={subscription["category_name"]}
               amount={subscription["amount"]}

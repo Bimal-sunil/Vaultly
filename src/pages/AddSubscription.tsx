@@ -11,6 +11,7 @@ import ChipContainer from "../components/ChipContainer";
 import DatePicker from "../components/DatePicker";
 import { parseDate } from "@internationalized/date";
 import HeroInput from "../components/HeroInput";
+import { isSubscriptionExpired } from "../helper";
 
 function AddSubscription() {
   const [showError, setShowError] = useState<boolean>(false);
@@ -18,11 +19,12 @@ function AddSubscription() {
   const isEditMode = Boolean(subscriptionId);
 
   const [subscriptionData, setSubscriptionData] = useState<Subscription>({
+    isActive: true,
     subscriptionName: "",
     amount: 0,
     categoryName: "Other",
     frequency: "Monthly",
-    renewalDayOfMonth: 1,
+    renewalDayOfMonth: 0,
   });
 
   const requiredFields: Array<keyof Subscription> = [
@@ -45,10 +47,7 @@ function AddSubscription() {
         : !!value;
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name: string, value: string | null) => {
     setSubscriptionData((prevData) => {
       return { ...prevData, [name]: value };
     });
@@ -65,7 +64,12 @@ function AddSubscription() {
   const validationError = showError ? "This field is required" : "";
 
   const handleAddSubcription = async () => {
+    const isExpired = subscriptionData.expiryDate
+      ? isSubscriptionExpired(subscriptionData.expiryDate)
+      : false;
+
     const subscriptionToInsert = {
+      is_active: !isExpired,
       subscription_name: subscriptionData.subscriptionName,
       category_name: subscriptionData.categoryName,
       amount: subscriptionData.amount,
@@ -103,6 +107,7 @@ function AddSubscription() {
 
         if (data) {
           setSubscriptionData({
+            isActive: data.is_active,
             subscriptionName: data.subscription_name,
             categoryName: data.category_name,
             amount: data.amount,
@@ -155,7 +160,7 @@ function AddSubscription() {
         <InputField
           label="Subscription Name"
           name="subscriptionName"
-          onChange={handleInputChange}
+          onChange={(e) => handleInputChange(e.target.name, e.target.value)}
           value={subscriptionData.subscriptionName}
           error={validationError}
         />
@@ -166,7 +171,10 @@ function AddSubscription() {
             max={31}
             label="Renewal Day of Month"
             name="renewalDayOfMonth"
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e.target.name, e.target.value);
+              handleSelectChange("renewalDate", null);
+            }}
             value={subscriptionData.renewalDayOfMonth}
             error={validationError}
           />
@@ -174,9 +182,10 @@ function AddSubscription() {
         {subscriptionData.frequency === "Yearly" && (
           <DatePicker
             label="Renewal Date"
-            onChange={(value) =>
-              handleSelectChange("renewalDate", value ? value.toString() : "")
-            }
+            onChange={(value) => {
+              handleSelectChange("renewalDate", value ? value.toString() : "");
+              handleInputChange("renewalDayOfMonth", null);
+            }}
             value={
               subscriptionData.renewalDate
                 ? parseDate(subscriptionData.renewalDate)

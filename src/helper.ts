@@ -5,7 +5,8 @@ import {
   isSameDay,
   startOfDay,
 } from "date-fns";
-import type { DayOfMonth, Subscription } from "./types";
+import type { DayOfMonth } from "./types";
+import { supabase } from "../utils/supabase";
 
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat("en-US", {
@@ -39,32 +40,95 @@ export function nextGivenDay(
   return new Date(nextYear, nextMonth, clampDay(nextYear, nextMonth, day));
 }
 
+// Check if today is after the expiry date of a subscription
+export function isSubscriptionExpired(expiryDateStr?: string | null): boolean {
+  if (!expiryDateStr) return false;
+  const expiryDate = startOfDay(new Date(expiryDateStr));
+  const today = startOfDay(new Date());
+  return isAfter(today, expiryDate);
+}
+
+// Sync and update subscriptions whose expiry date has passed today
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function syncExpiredSubscriptions(subscriptions: any[]) {
+  if (!subscriptions || subscriptions.length === 0) return subscriptions;
+
+  const expiredIdsToUpdate: string[] = [];
+
+  const updatedSubscriptions = subscriptions.map((sub) => {
+    const expiry = sub.expiry_date || sub.expiryDate;
+    const isCurrentlyActive = sub.is_active ?? sub.isActive ?? true;
+
+    if (expiry && isCurrentlyActive) {
+      if (isSubscriptionExpired(expiry)) {
+        if (sub.id) expiredIdsToUpdate.push(sub.id);
+        return { ...sub, is_active: false, isActive: false };
+      }
+    }
+    return sub;
+  });
+
+  if (expiredIdsToUpdate.length > 0) {
+    const { error } = await supabase
+      .from("Subscriptions")
+      .update({ is_active: false })
+      .in("id", expiredIdsToUpdate);
+
+    if (error) {
+      console.error("Error updating expired subscriptions status:", error);
+    }
+  }
+
+  return updatedSubscriptions;
+}
+
+export function getDaysInYear(year: number) {
+  const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+  return isLeapYear ? 366 : 365;
+}
+
 export function findTotalAmount(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   subscriptions: any[],
-  estimate: Subscription["frequency"] = "Monthly",
+  estimate: "Monthly" | "Yearly" = "Monthly",
 ) {
   if (!subscriptions || subscriptions.length === 0) return 0;
 
-  let totalAmount = 0;
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0-indexed (0 = Jan, 6 = July, etc.)
+
+  const daysInMonth = getDaysInMonth(now);
+  const daysInYear = getDaysInYear(now.getFullYear());
+
+  let monthlyTotal = 0;
+  let yearlyTotal = 0;
 
   for (const sub of subscriptions) {
+    if (sub.is_active === false || sub.isActive === false) continue;
     const freq = sub.frequency ?? sub["frequency"];
     const amount = Number(sub.amount) || 0;
 
     if (freq === "Daily") {
-      totalAmount += amount * 365; // Assuming 30 days in a month for daily subscriptions
+      monthlyTotal += amount * daysInMonth;
+      yearlyTotal += amount * daysInYear;
     } else if (freq === "Monthly") {
-      totalAmount += amount * 12; // Assuming 12 months in a year for monthly subscriptions
-    } else {
-      totalAmount += amount; // For yearly subscriptions, just add the amount
+      monthlyTotal += amount;
+      yearlyTotal += amount * 12;
+    } else if (freq === "Yearly") {
+      yearlyTotal += amount;
+
+      const renewalDateStr = sub.renewal_date ?? sub.renewalDate;
+      if (renewalDateStr) {
+        const renewalMonth = new Date(renewalDateStr).getMonth();
+        if (renewalMonth === currentMonth) {
+          monthlyTotal += amount; // Only add to monthlyTotal if it's a Yearly sub renewing this month
+        }
+      }
     }
   }
 
-  if (estimate === "Daily") return (totalAmount / 365).toFixed(1);
-  if (estimate === "Monthly") return (totalAmount / 12).toFixed(1);
-  // estimate === "Yearly"
-  return totalAmount.toFixed(1);
+  if (estimate === "Monthly") return monthlyTotal.toFixed(1);
+  return yearlyTotal.toFixed(1);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,9 +137,19 @@ export function findRenewingSoonCount(subscriptions: any[]): number {
     const diffInDays = differenceInCalendarDays(endDate, startDate);
     return diffInDays >= 0 && diffInDays <= 7;
   };
-  return subscriptions.filter((sub) =>
-    handleRenewSoon(new Date(), new Date(sub["expiry_date"])),
-  ).length;
+  return subscriptions.filter((sub) => {
+    if (sub.is_active === false || sub.isActive === false) return false;
+    const renewalDateObj: Date | null =
+      (sub["renewal_date"] ?? sub["renewalDate"])
+        ? new Date(sub["renewal_date"] ?? sub["renewalDate"])
+        : (sub["renewal_day_of_month"] ?? sub["renewalDayOfMonth"])
+          ? nextGivenDay(
+              sub["renewal_day_of_month"] ??
+                (sub["renewalDayOfMonth"] as DayOfMonth),
+            )
+          : null;
+    return renewalDateObj ? handleRenewSoon(new Date(), renewalDateObj) : false;
+  }).length;
 }
 
 export const formatAmount = (amount: number) => {

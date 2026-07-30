@@ -51,6 +51,7 @@ export interface CategoryItem {
 }
 
 type BaseSubscription = {
+  isActive: boolean;
   subscriptionName: string;
   categoryName: CategoryName;
   amount: number;

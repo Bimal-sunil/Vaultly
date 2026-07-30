@@ -20,6 +20,7 @@ type Props = Subscription & {
 function SubscriptionCard(props: Props) {
   const {
     id,
+    isActive = true,
     subscriptionName,
     categoryName,
     amount,
@@ -49,7 +50,6 @@ function SubscriptionCard(props: Props) {
       : null;
 
   const now = startOfDay(new Date());
-  const isCanceled = expiryDateObj ? isPast(expiryDateObj) : false;
   const toRenewal: number | null = renewalDateObj
     ? differenceInCalendarDays(renewalDateObj, now)
     : null;
@@ -65,7 +65,7 @@ function SubscriptionCard(props: Props) {
 
   return (
     <div
-      className={`flex items-center justify-between bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)] gap-4 p-3 bg-text rounded-[25px] w-full ${isCanceled ? "opacity-50" : ""}`}
+      className={`flex items-center justify-between bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)] gap-4 p-3 bg-text rounded-[25px] w-full ${!isActive ? "opacity-50" : ""}`}
     >
       <div className="flex items-center gap-2 w-[60%]">
         {selectedCategory?.icon && (
