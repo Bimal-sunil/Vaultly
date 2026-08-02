@@ -14,7 +14,7 @@ function ChipContainer(props: Props) {
     <div
       className={twMerge(
         className,
-        "w-full flex items-center gap-2 overflow-x-scroll",
+        "w-full flex items-center justify-between gap-2 overflow-x-scroll",
       )}
     >
       {options.map((option, index) => (

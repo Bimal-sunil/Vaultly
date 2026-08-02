@@ -55,7 +55,7 @@ type BaseSubscription = {
   subscriptionName: string;
   categoryName: CategoryName;
   amount: number;
-  priority?: "High" | "Medium" | "Low" | "None";
+  priority?: "High" | "Medium" | "Low";
   expiryDate?: string;
 };
 

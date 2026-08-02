@@ -12,10 +12,14 @@ import DatePicker from "../components/DatePicker";
 import { parseDate } from "@internationalized/date";
 import HeroInput from "../components/HeroInput";
 import { isSubscriptionExpired } from "../helper";
+import ToggleGroup from "../components/ToggleGroup";
+import Switch from "../components/Switch";
+import Slider from "../components/Slider";
 
 function AddSubscription() {
   const [showError, setShowError] = useState<boolean>(false);
   const { subscriptionId } = useParams<{ subscriptionId: string }>();
+  const [showExpiry, setShowExpiry] = useState<boolean>(false);
   const isEditMode = Boolean(subscriptionId);
 
   const [subscriptionData, setSubscriptionData] = useState<Subscription>({
@@ -24,7 +28,8 @@ function AddSubscription() {
     amount: 0,
     categoryName: "Other",
     frequency: "Monthly",
-    renewalDayOfMonth: 0,
+    renewalDayOfMonth: 1,
+    priority: "Low",
   });
 
   const requiredFields: Array<keyof Subscription> = [
@@ -151,10 +156,14 @@ function AddSubscription() {
           onChange={(value) => handleSelectChange("amount", value)}
           label="Amount"
         />
-        <ChipContainer
-          options={["Daily", "Monthly", "Yearly"]}
-          className="justify-center"
+        <ToggleGroup
+          options={[
+            { label: "Daily", value: "Daily" },
+            { label: "Monthly", value: "Monthly" },
+            { label: "Yearly", value: "Yearly" },
+          ]}
           onChange={(value) => handleSelectChange("frequency", value)}
+          label="Billing Frequency"
           value={subscriptionData.frequency}
         />
         <InputField
@@ -165,18 +174,18 @@ function AddSubscription() {
           error={validationError}
         />
         {subscriptionData.frequency === "Monthly" && (
-          <InputField
-            type="number"
-            min={1}
-            max={31}
-            label="Renewal Day of Month"
-            name="renewalDayOfMonth"
-            onChange={(e) => {
-              handleInputChange(e.target.name, e.target.value);
-              handleSelectChange("renewalDate", null);
-            }}
-            value={subscriptionData.renewalDayOfMonth}
-            error={validationError}
+          <Slider
+            label="When is your next payment?"
+            formatOutput={(value) => `Day ${value}`}
+            minValue={1}
+            maxValue={31}
+            onChange={(value) =>
+              handleSelectChange(
+                "renewalDayOfMonth",
+                typeof value === "number" ? value : value[0],
+              )
+            }
+            value={subscriptionData.renewalDayOfMonth || 1}
           />
         )}
         {subscriptionData.frequency === "Yearly" && (
@@ -193,21 +202,31 @@ function AddSubscription() {
             }
           />
         )}
-        <DatePicker
-          label="Date of Expiry"
-          onChange={(value) =>
-            handleSelectChange("expiryDate", value ? value.toString() : "")
-          }
-          value={
-            subscriptionData.expiryDate
-              ? parseDate(subscriptionData.expiryDate)
-              : null
-          }
-        />
-        <ChipContainer
-          options={["Low", "Medium", "High"]}
-          className="justify-center"
+        <div className="w-full flex items-center justify-between">
+          <span className="p text-accent-bg">Set Expiry Date</span>
+          <Switch onChange={(isSelected) => setShowExpiry(isSelected)} />
+        </div>
+        {showExpiry && (
+          <DatePicker
+            label="Date of Expiry"
+            onChange={(value) =>
+              handleSelectChange("expiryDate", value ? value.toString() : "")
+            }
+            value={
+              subscriptionData.expiryDate
+                ? parseDate(subscriptionData.expiryDate)
+                : null
+            }
+          />
+        )}
+        <ToggleGroup
+          options={[
+            { label: "Low", value: "Low" },
+            { label: "Medium", value: "Medium" },
+            { label: "High", value: "High" },
+          ]}
           onChange={(value) => handleSelectChange("priority", value)}
+          label="Priority"
           value={subscriptionData.priority}
         />
       </form>
