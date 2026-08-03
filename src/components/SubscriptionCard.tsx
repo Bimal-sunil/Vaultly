@@ -76,7 +76,7 @@ function SubscriptionCard(props: Props) {
         )}
         <div className="flex flex-col">
           <h3 className="h4 text-light">{subscriptionName}</h3>
-          {dueNext && (
+          {dueNext >= 0 && (
             <div className="w-full flex items-center gap-1 flex-wrap">
               <span className="w-2 h-2 bg-[#EA2B1F] block rounded-[50%]"></span>
               <p className="text-accent-bg small">Renews in {dueNext}d</p>

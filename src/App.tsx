@@ -3,6 +3,7 @@ import "./App.css";
 import Header from "./components/Header";
 import Hero from "./pages/Hero";
 import AddSubscription from "./pages/AddSubscription";
+import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           path="/editSubscription/:subscriptionId"
           element={<AddSubscription />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <NavBar />
     </main>
