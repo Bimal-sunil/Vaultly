@@ -1,5 +1,5 @@
 import type { DayOfMonth, Subscription } from "../types";
-import { nextGivenDay } from "../helper";
+import { getExpiryDateObj, getRenewalDateObj } from "../helper";
 import { categories } from "../data";
 import { differenceInCalendarDays, isPast, startOfDay } from "date-fns";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -36,18 +36,11 @@ function SubscriptionCard(props: Props) {
     (cat) => cat.categoryname === categoryName,
   );
 
-  let expiryDateObj: Date | null = expiryDate ? new Date(expiryDate) : null;
-  // Normalize invalid dates to null but don't early-return so hooks remain stable
-  if (expiryDateObj && isNaN(expiryDateObj.getTime())) {
-    console.error("Invalid date string received");
-    expiryDateObj = null;
-  }
-
-  const renewalDateObj: Date | null = renewalDate
-    ? new Date(renewalDate)
-    : renewalDayOfMonth
-      ? nextGivenDay(renewalDayOfMonth as DayOfMonth)
-      : null;
+  const expiryDateObj = getExpiryDateObj({ expiryDate });
+  const renewalDateObj = getRenewalDateObj({
+    renewalDate,
+    renewalDayOfMonth,
+  });
 
   const now = startOfDay(new Date());
   const toRenewal: number | null = renewalDateObj

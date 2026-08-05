@@ -5,14 +5,20 @@ import {
   isSameDay,
   startOfDay,
 } from "date-fns";
-import type { DayOfMonth } from "./types";
+import type { DayOfMonth, Subscription } from "./types";
 import { supabase } from "../utils/supabase";
 
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", {
+export function formatDate(date: Date, monthOnly: boolean = false): string {
+  const options: Intl.DateTimeFormatOptions = {
     month: "long",
     year: "numeric",
-  }).format(date);
+  };
+
+  if (!monthOnly) {
+    options.day = "numeric";
+  }
+
+  return new Intl.DateTimeFormat("en-US", options).format(date);
 }
 
 function clampDay(year: number, month: number, day: number) {
@@ -48,6 +54,18 @@ export function isSubscriptionExpired(expiryDateStr?: string | null): boolean {
   return isAfter(today, expiryDate);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isSubActive(sub: any): boolean {
+  if (!sub) return false;
+  return sub.is_active !== false && sub.isActive !== false;
+}
+
+export function getDaysUntil(dateObj: Date | null): number | null {
+  if (!dateObj) return null;
+  const now = startOfDay(new Date());
+  return differenceInCalendarDays(startOfDay(dateObj), now);
+}
+
 // Sync and update subscriptions whose expiry date has passed today
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function syncExpiredSubscriptions(subscriptions: any[]) {
@@ -57,7 +75,7 @@ export async function syncExpiredSubscriptions(subscriptions: any[]) {
 
   const updatedSubscriptions = subscriptions.map((sub) => {
     const expiry = sub.expiry_date || sub.expiryDate;
-    const isCurrentlyActive = sub.is_active ?? sub.isActive ?? true;
+    const isCurrentlyActive = isSubActive(sub);
 
     if (expiry && isCurrentlyActive) {
       if (isSubscriptionExpired(expiry)) {
@@ -104,7 +122,7 @@ export function findTotalAmount(
   let yearlyTotal = 0;
 
   for (const sub of subscriptions) {
-    if (sub.is_active === false || sub.isActive === false) continue;
+    if (!isSubActive(sub)) continue;
     const freq = sub.frequency ?? sub["frequency"];
     const amount = Number(sub.amount) || 0;
 
@@ -131,24 +149,50 @@ export function findTotalAmount(
   return yearlyTotal.toFixed(1);
 }
 
+// Reusable helper to safely get a valid Date object for a subscription's expiry date
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getExpiryDateObj(sub: any): Date | null {
+  if (!sub) return null;
+  const expiry =
+    typeof sub === "string" ? sub : (sub.expiry_date ?? sub.expiryDate);
+  if (!expiry) return null;
+  const dateObj = new Date(expiry);
+  if (isNaN(dateObj.getTime())) {
+    return null;
+  }
+  return dateObj;
+}
+
+// Reusable helper to safely get a valid Date object for a subscription's renewal date
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getRenewalDateObj(sub: any): Date | null {
+  if (!sub) return null;
+  const renewalDate = sub.renewal_date ?? sub.renewalDate;
+  const renewalDay = sub.renewal_day_of_month ?? sub.renewalDayOfMonth;
+
+  if (renewalDate) {
+    const dateObj = new Date(renewalDate);
+    if (!isNaN(dateObj.getTime())) {
+      return dateObj;
+    }
+  }
+
+  if (renewalDay) {
+    const dateObj = nextGivenDay(renewalDay as DayOfMonth);
+    if (dateObj && !isNaN(dateObj.getTime())) {
+      return dateObj;
+    }
+  }
+
+  return null;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function findRenewingSoonCount(subscriptions: any[]): number {
-  const handleRenewSoon = (startDate: Date, endDate: Date): boolean => {
-    const diffInDays = differenceInCalendarDays(endDate, startDate);
-    return diffInDays >= 0 && diffInDays <= 7;
-  };
   return subscriptions.filter((sub) => {
-    if (sub.is_active === false || sub.isActive === false) return false;
-    const renewalDateObj: Date | null =
-      (sub["renewal_date"] ?? sub["renewalDate"])
-        ? new Date(sub["renewal_date"] ?? sub["renewalDate"])
-        : (sub["renewal_day_of_month"] ?? sub["renewalDayOfMonth"])
-          ? nextGivenDay(
-              sub["renewal_day_of_month"] ??
-                (sub["renewalDayOfMonth"] as DayOfMonth),
-            )
-          : null;
-    return renewalDateObj ? handleRenewSoon(new Date(), renewalDateObj) : false;
+    if (!isSubActive(sub)) return false;
+    const days = getDaysUntil(getRenewalDateObj(sub));
+    return days !== null && days >= 0 && days <= 7;
   }).length;
 }
 
@@ -167,3 +211,55 @@ export const formatAmount = (amount: number) => {
 
   return `${(amount / 1_00_00_000).toFixed(1).replace(/\.0$/, "")}Cr`;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getDaysLeft(sub: any): number {
+  let minDays = Infinity;
+
+  const expiryDays = getDaysUntil(getExpiryDateObj(sub));
+  if (expiryDays !== null && expiryDays >= 0 && expiryDays < minDays) {
+    minDays = expiryDays;
+  }
+
+  const renewalDays = getDaysUntil(getRenewalDateObj(sub));
+  if (renewalDays !== null && renewalDays >= 0 && renewalDays < minDays) {
+    minDays = renewalDays;
+  }
+
+  return minDays;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function sortByUrgencyAndPriority(subscriptions: any[]): any[] {
+  const priorityWeight: Record<string, number> = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
+
+  const getUrgencyGroup = (sub: any): number => {
+    const renewalDays = getDaysUntil(getRenewalDateObj(sub));
+    if (renewalDays !== null && renewalDays >= 0 && renewalDays <= 7) return 1;
+
+    const expiryDays = getDaysUntil(getExpiryDateObj(sub));
+    if (expiryDays !== null && expiryDays >= 0 && expiryDays <= 7) return 2;
+
+    return 3;
+  };
+
+  return [...subscriptions].sort((a, b) => {
+    const activeA = isSubActive(a) ? 1 : 0;
+    const activeB = isSubActive(b) ? 1 : 0;
+    if (activeA !== activeB) return activeB - activeA;
+
+    const groupA = getUrgencyGroup(a);
+    const groupB = getUrgencyGroup(b);
+    if (groupA !== groupB) return groupA - groupB;
+
+    const pA = priorityWeight[a.priority?.toLowerCase()] || 0;
+    const pB = priorityWeight[b.priority?.toLowerCase()] || 0;
+    if (pA !== pB) return pB - pA;
+
+    return getDaysLeft(a) - getDaysLeft(b);
+  });
+}
