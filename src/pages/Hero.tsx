@@ -10,6 +10,7 @@ import {
 import Card from "../components/Card";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
+import LoadingState from "../components/LoadingState";
 import { categories } from "../data";
 import SubscriptionCard from "../components/SubscriptionCard";
 import { supabase } from "../../utils/supabase";
@@ -21,16 +22,18 @@ function Hero() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName>("All");
+  const [isLoading, setIsLoading] = useState(true);
+
   const fetchSubscriptionData = async () => {
+    setIsLoading(true);
     const { data, error } = await supabase.from("Subscriptions").select();
     if (error) {
       console.error("Error fetching subscription data:", error);
-      return;
-    }
-    if (data) {
+    } else if (data) {
       const syncedData = await syncExpiredSubscriptions(data);
       setSubscriptions(syncedData);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -97,7 +100,9 @@ function Hero() {
         value={selectedCategory}
       />
       <div className="flex flex-col gap-6 w-full">
-        {visibleSubscriptions.length > 0 ? (
+        {isLoading ? (
+          <LoadingState />
+        ) : visibleSubscriptions.length > 0 ? (
           <>
             {visibleSubscriptions.map((subscription) => (
               <SubscriptionCard

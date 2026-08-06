@@ -5,6 +5,7 @@ import { ArrowLeft02Icon, Search02Icon } from "@hugeicons/core-free-icons";
 import SubscriptionCard from "../components/SubscriptionCard";
 import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
+import LoadingState from "../components/LoadingState";
 import { supabase } from "../../utils/supabase";
 import { syncExpiredSubscriptions, sortByUrgencyAndPriority } from "../helper";
 
@@ -81,7 +82,7 @@ function AllSubscriptions() {
 
       <div className="flex flex-col gap-6 w-full">
         {isLoading ? (
-           <div className="w-full text-center p-8 text-accent-bg animate-pulse">Loading subscriptions...</div>
+           <LoadingState />
         ) : displayedSubscriptions.length > 0 ? (
           <>
             {displayedSubscriptions.map((subscription) => (

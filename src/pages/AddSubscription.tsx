@@ -133,7 +133,10 @@ function AddSubscription() {
 
   return (
     <div className="w-full flex flex-col gap-8">
-      <h1 className="font-primary text-3xl font-semibold flex items-center gap-4 text-light">
+      <h1
+        className="font-primary text-3xl font-semibold flex items-center gap-4 text-light"
+        onClick={() => navigate("/")}
+      >
         <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent" />
         Add Subscription
       </h1>
@@ -155,6 +158,7 @@ function AddSubscription() {
           value={subscriptionData.amount}
           onChange={(value) => handleSelectChange("amount", value)}
           label="Amount"
+          autoFocus={true}
         />
         <ToggleGroup
           options={[

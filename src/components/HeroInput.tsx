@@ -9,9 +9,10 @@ type Props = {
   value: number;
   onChange: (value: number) => void;
   className?: string;
+  autoFocus?: boolean;
 };
 
-function HeroInput({ icon, value, label, onChange, className }: Props) {
+function HeroInput({ icon, value, label, onChange, className, autoFocus }: Props) {
   const [inputText, setInputText] = useState<string>("");
 
   const formattedCurrency = useMemo(() => {
@@ -73,6 +74,7 @@ function HeroInput({ icon, value, label, onChange, className }: Props) {
             className="react-aria-Input outline-0 field-sizing-content"
             style={fontSizeStyle}
             onInput={(e) => setInputText(e.currentTarget.value)}
+            autoFocus={autoFocus}
           />
         </Group>
       </NumberField>
