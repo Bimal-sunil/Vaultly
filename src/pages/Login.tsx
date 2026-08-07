@@ -1,46 +1,59 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [contactInfo, setContactInfo] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = (e?: React.FormEvent) => {
+  const handleSendOtp = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    // Do nothing for now as per user instruction
-    console.log("Login", { email, password });
+    if (!contactInfo.trim()) {
+      setError("This field is required");
+      return;
+    }
+
+    setError("");
+    console.log("Send OTP to", contactInfo);
+    navigate("/verify", { state: { contactInfo } });
   };
 
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-[80vh] gap-8">
       <div className="text-center">
-        <h1 className="font-primary text-4xl font-semibold text-light mb-2">Welcome Back</h1>
+        <h1 className="font-primary text-4xl font-semibold text-light mb-2">
+          Welcome Back
+        </h1>
         <p className="text-accent-bg">Log in to your Vaultly account</p>
       </div>
 
-      <form className="w-full max-w-md flex flex-col gap-4" onSubmit={handleLogin}>
+      <form
+        className="w-full max-w-md flex flex-col gap-4"
+        onSubmit={handleSendOtp}
+      >
         <InputField
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <InputField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          label="Email or Phone Number"
+          type="text"
+          value={contactInfo}
+          onChange={(e) => {
+            setContactInfo(e.target.value);
+            if (error) setError("");
+          }}
+          error={error}
         />
         <div className="mt-4 flex justify-center">
-          <Button label="Log In" onClick={() => handleLogin()} />
+          <Button label="Send OTP" onClick={() => handleSendOtp()} />
         </div>
       </form>
 
       <p className="text-light">
         Don't have an account?{" "}
-        <Link to="/signup" className="text-accent font-semibold hover:underline">
+        <Link
+          to="/signup"
+          className="text-accent font-semibold hover:underline"
+        >
           Sign up
         </Link>
       </p>

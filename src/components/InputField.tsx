@@ -16,6 +16,8 @@ type Props = {
   //Number input props
   min?: number;
   max?: number;
+  maxLength?: number;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 };
 
 function InputField(props: Props) {
@@ -29,6 +31,8 @@ function InputField(props: Props) {
     error,
     min,
     max,
+    maxLength,
+    inputMode,
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -52,6 +56,8 @@ function InputField(props: Props) {
             onChange={onChange}
             min={min}
             max={max}
+            maxLength={maxLength}
+            inputMode={inputMode}
           />
           {type === "date" && (
             <HugeiconsIcon
