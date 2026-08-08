@@ -2,26 +2,31 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
+import { supabase } from "../../utils/supabase";
 
 function Signup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [contactInfo, setContactInfo] = useState("");
-  const [errors, setErrors] = useState({ firstName: "", lastName: "", contactInfo: "" });
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
   const navigate = useNavigate();
 
-  const handleSendOtp = (e?: React.FormEvent) => {
+  const handleSendOtp = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
+
     let hasError = false;
-    const newErrors = { firstName: "", lastName: "", contactInfo: "" };
+    const newErrors = { firstName: "", lastName: "", email: "" };
 
     if (!firstName.trim()) {
       newErrors.firstName = "First name is required";
       hasError = true;
     }
-    if (!contactInfo.trim()) {
-      newErrors.contactInfo = "Email or phone number is required";
+    if (!email.trim()) {
+      newErrors.email = "Email address is required";
       hasError = true;
     }
 
@@ -29,8 +34,25 @@ function Signup() {
 
     if (hasError) return;
 
-    console.log("Send Signup OTP to", contactInfo);
-    navigate("/verify", { state: { contactInfo, name: `${firstName.trim()} ${lastName.trim()}` } });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
+    });
+
+    if (error) {
+      console.error("Unable to create user!", error);
+      return;
+    }
+
+    navigate("/verify", {
+      state: { email, name: `${firstName.trim()} ${lastName.trim()}` },
+    });
   };
 
   return (
@@ -69,14 +91,14 @@ function Signup() {
           />
         </div>
         <InputField
-          label="Email or Phone Number"
-          type="text"
-          value={contactInfo}
+          label="Email Address"
+          type="email"
+          value={email}
           onChange={(e) => {
-            setContactInfo(e.target.value);
-            if (errors.contactInfo) setErrors({ ...errors, contactInfo: "" });
+            setEmail(e.target.value);
+            if (errors.email) setErrors({ ...errors, email: "" });
           }}
-          error={errors.contactInfo}
+          error={errors.email}
         />
         <div className="mt-4 flex justify-center">
           <Button label="Send OTP" onClick={() => handleSendOtp()} />
@@ -85,10 +107,7 @@ function Signup() {
 
       <p className="text-light">
         Already have an account?{" "}
-        <Link
-          to="/login"
-          className="text-accent font-semibold hover:underline"
-        >
+        <Link to="/login" className="text-accent font-semibold hover:underline">
           Log in
         </Link>
       </p>

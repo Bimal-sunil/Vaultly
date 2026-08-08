@@ -10,12 +10,15 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
+import ProtectedRoute from "./components/ProtectedRoute";
 import { twMerge } from "tailwind-merge";
 
 function App() {
   const location = useLocation();
   const isAuthRoute =
-    location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/verify";
+    location.pathname === "/login" ||
+    location.pathname === "/signup" ||
+    location.pathname === "/verify";
 
   return (
     <main className={twMerge("app p-8", !isAuthRoute ? "pb-28" : "")}>
@@ -31,18 +34,18 @@ function App() {
         </div>
       )}
       <Routes>
-        <Route path="/" element={<Hero />} />
-        <Route path="/subscriptions" element={<AllSubscriptions />} />
-        <Route path="/addSubscription" element={<AddSubscription />} />
+        <Route path="/" element={<ProtectedRoute><Hero /></ProtectedRoute>} />
+        <Route path="/subscriptions" element={<ProtectedRoute><AllSubscriptions /></ProtectedRoute>} />
+        <Route path="/addSubscription" element={<ProtectedRoute><AddSubscription /></ProtectedRoute>} />
         <Route
           path="/editSubscription/:subscriptionId"
-          element={<AddSubscription />}
+          element={<ProtectedRoute><AddSubscription /></ProtectedRoute>}
         />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/verify" element={<OTPVerification />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/verify" element={<OTPVerification />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
       {!isAuthRoute && <NavBar />}
     </main>

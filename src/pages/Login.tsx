@@ -4,20 +4,20 @@ import InputField from "../components/InputField";
 import Button from "../components/Button";
 
 function Login() {
-  const [contactInfo, setContactInfo] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSendOtp = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!contactInfo.trim()) {
+    if (!email.trim()) {
       setError("This field is required");
       return;
     }
 
     setError("");
-    console.log("Send OTP to", contactInfo);
-    navigate("/verify", { state: { contactInfo } });
+    console.log("Send OTP to", email);
+    navigate("/verify", { state: { email } });
   };
 
   return (
@@ -34,11 +34,11 @@ function Login() {
         onSubmit={handleSendOtp}
       >
         <InputField
-          label="Email or Phone Number"
-          type="text"
-          value={contactInfo}
+          label="Email Address"
+          type="email"
+          value={email}
           onChange={(e) => {
-            setContactInfo(e.target.value);
+            setEmail(e.target.value);
             if (error) setError("");
           }}
           error={error}
