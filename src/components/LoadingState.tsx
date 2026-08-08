@@ -1,4 +1,10 @@
-function LoadingState() {
+type Props = {
+  message?: string;
+  descritpion?: string;
+};
+
+function LoadingState(props: Props) {
+  const { message, descritpion } = props;
   return (
     <div className="relative w-full flex flex-col items-center justify-center text-center gap-6 py-8 mt-2">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-accent/20 rounded-full blur-[80px] pointer-events-none -z-10 animate-pulse" />
@@ -12,11 +18,9 @@ function LoadingState() {
 
         <div className="flex flex-col gap-2 items-center">
           <h3 className="text-xl font-bold tracking-tight bg-linear-to-br from-accent via-light to-accent/50 bg-clip-text text-transparent select-none animate-pulse">
-            Syncing Vault...
+            {message}
           </h3>
-          <p className="small text-accent-bg opacity-75">
-            Retrieving your active subscriptions
-          </p>
+          <p className="small text-accent-bg opacity-75">{descritpion}</p>
         </div>
       </div>
     </div>

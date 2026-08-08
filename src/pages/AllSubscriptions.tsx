@@ -40,7 +40,7 @@ function AllSubscriptions() {
       filtered = filtered.filter((sub) =>
         (sub.subscription_name || sub.subscriptionName || "")
           .toLowerCase()
-          .includes(query)
+          .includes(query),
       );
     }
     return sortByUrgencyAndPriority(filtered);
@@ -56,7 +56,10 @@ function AllSubscriptions() {
 
   return (
     <div className="w-full flex flex-col gap-8 pb-12">
-      <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate("/")}>
+      <div
+        className="flex items-center gap-4 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
         <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent w-8 h-8" />
         <h1 className="font-primary text-3xl font-semibold text-light">
           All Subscriptions
@@ -64,9 +67,9 @@ function AllSubscriptions() {
       </div>
 
       <div className="relative w-full">
-        <HugeiconsIcon 
-          icon={Search02Icon} 
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-bg w-6 h-6" 
+        <HugeiconsIcon
+          icon={Search02Icon}
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-bg w-6 h-6"
         />
         <input
           type="text"
@@ -82,7 +85,10 @@ function AllSubscriptions() {
 
       <div className="flex flex-col gap-6 w-full">
         {isLoading ? (
-           <LoadingState />
+          <LoadingState
+            message="Syncing vault..."
+            descritpion="Retrieving your active subscriptions"
+          />
         ) : displayedSubscriptions.length > 0 ? (
           <>
             {displayedSubscriptions.map((subscription) => (
@@ -104,12 +110,13 @@ function AllSubscriptions() {
                     .from("Subscriptions")
                     .delete()
                     .eq("id", id);
-                  if (error) console.error("Error deleting subscription:", error);
+                  if (error)
+                    console.error("Error deleting subscription:", error);
                   await fetchSubscriptionData();
                 }}
               />
             ))}
-            
+
             {visibleCount < filteredSubscriptions.length && (
               <div className="w-full flex justify-center mt-2">
                 <Button label="Load More" onClick={handleLoadMore} />
@@ -121,7 +128,7 @@ function AllSubscriptions() {
             tagText={subscriptions.length === 0 ? "Empty Vault" : "No Matches"}
             title={subscriptions.length === 0 ? "All Clear" : "Nothing Found"}
             description={
-              subscriptions.length === 0 
+              subscriptions.length === 0
                 ? "You haven't added any subscriptions yet."
                 : "We couldn't find any subscriptions matching your search."
             }

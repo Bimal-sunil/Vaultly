@@ -46,6 +46,7 @@ function OTPVerification() {
     }
     if (session) {
       setValidationError("");
+      navigate("/");
       console.log("OTP verified successfully:", session);
     }
   };
@@ -62,7 +63,7 @@ function OTPVerification() {
         onSubmit={handleVerifyOtp}
       >
         <p className="text-light p text-center mb-2">
-          Enter the OTP sent to <br />
+          If an account exists, an OTP was sent to <br />
           <span className="font-semibold text-accent">{email}</span>
         </p>
         <InputField

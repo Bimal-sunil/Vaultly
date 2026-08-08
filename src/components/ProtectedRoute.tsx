@@ -6,7 +6,12 @@ import { Navigate } from "react-router-dom";
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <LoadingState
+        message="Retrieving account..."
+        descritpion="Please wait while we retrieve your account"
+      />
+    );
   }
   if (!user) {
     return <Navigate to="/login" replace />;

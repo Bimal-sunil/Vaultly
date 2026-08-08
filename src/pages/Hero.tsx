@@ -17,12 +17,15 @@ import { supabase } from "../../utils/supabase";
 import { useNavigate } from "react-router-dom";
 import type { CategoryItem, CategoryName } from "../types";
 import ChipContainer from "../components/ChipContainer";
+import { useAuth } from "../context/AuthContext";
 
 function Hero() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName>("All");
   const [isLoading, setIsLoading] = useState(true);
+
+  const { profile } = useAuth();
 
   const fetchSubscriptionData = async () => {
     setIsLoading(true);
@@ -65,7 +68,10 @@ function Hero() {
   return (
     <div className="w-full flex flex-col gap-8">
       <section className="flex flex-col gap-">
-        <h1 className="h1 text-light">Hello, User!</h1>
+        <h1 className="h1 text-light">
+          Hello, {profile?.first_name || "User"}!
+        </h1>
+
         <p className="text-accent-bg uppercase p">{formatDate(new Date())}</p>
       </section>
       <section className="flex flex-col gap-12 items-center">
@@ -101,7 +107,10 @@ function Hero() {
       />
       <div className="flex flex-col gap-6 w-full">
         {isLoading ? (
-          <LoadingState />
+          <LoadingState
+            message="Syncing vault..."
+            descritpion="Retrieving your active subscriptions"
+          />
         ) : visibleSubscriptions.length > 0 ? (
           <>
             {visibleSubscriptions.map((subscription) => (

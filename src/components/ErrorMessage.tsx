@@ -14,8 +14,8 @@ function ErrorMessage(props: Props) {
         ? "text-[#ffba08]"
         : "text-[#3f88c5]";
   return (
-    <span className={`mt-2 flex items-center gap-2 ${modeColor}`}>
-      <FaExclamationCircle />
+    <span className={`mt-2 flex p gap-2 ${modeColor}`}>
+      <FaExclamationCircle className="mt-1" />
       {message}
     </span>
   );

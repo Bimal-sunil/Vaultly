@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
+import { supabase } from "../../utils/supabase";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSendOtp = (e?: React.FormEvent) => {
+  const handleSendOtp = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!email.trim()) {
       setError("This field is required");
@@ -16,7 +17,14 @@ function Login() {
     }
 
     setError("");
-    console.log("Send OTP to", email);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+    });
+    if (error) {
+      console.error("Login OTP error:", error);
+      setError("Failed to send OTP. Please wait a moment and try again.");
+      return;
+    }
     navigate("/verify", { state: { email } });
   };
 
