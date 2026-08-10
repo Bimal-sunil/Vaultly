@@ -10,12 +10,20 @@ import {
   HelpCircleIcon,
 } from "@hugeicons/core-free-icons";
 import Button from "../components/Button";
+import { supabase } from "../../utils/supabase";
+import { useAuth } from "../context/AuthContext";
+import ProfileImageUpload from "../components/ProfileImageUpload";
 
 function Profile() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
 
   const profileOptions = [
-    { icon: UserCircleIcon, label: "Account Details", onClick: () => {} },
+    {
+      icon: UserCircleIcon,
+      label: "Account Details",
+      onClick: () => navigate("/account-details"),
+    },
     { icon: Settings02Icon, label: "Settings", onClick: () => {} },
     {
       icon: Notification02Icon,
@@ -25,6 +33,15 @@ function Profile() {
     },
     { icon: HelpCircleIcon, label: "Help & Support", onClick: () => {} },
   ];
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+      return;
+    }
+    navigate("/login");
+  };
 
   return (
     <div className="w-full flex flex-col gap-8 pb-12">
@@ -39,16 +56,12 @@ function Profile() {
       </div>
 
       <div className="flex flex-col items-center gap-4 mt-4">
-        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-accent">
-          <img
-            src="https://images.unsplash.com/photo-1681131194788-613458a15616?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDZ8fHBvcnRyYWl0fGVufDB8MnwwfHx8MA%3D%3D"
-            alt="User Avatar"
-            className="w-full h-full object-cover"
-          />
-        </div>
+        <ProfileImageUpload />
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-light">Hello, User!</h2>
-          <p className="text-accent-bg text-sm mt-1">user@example.com</p>
+          <h2 className="text-2xl font-semibold text-light">
+            Hello, {profile?.first_name || "User"}!
+          </h2>
+          <p className="text-accent-bg text-sm mt-1">{profile?.email}</p>
         </div>
       </div>
 
@@ -82,7 +95,7 @@ function Profile() {
       <div className="w-full mt-4">
         <button
           className="w-full flex items-center justify-center gap-2 p-4 rounded-[15px] border border-[rgba(255,99,71,0.5)] text-[#FF6347] hover:bg-[rgba(255,99,71,0.1)] transition-colors"
-          onClick={() => {}}
+          onClick={handleLogout}
         >
           <HugeiconsIcon icon={Logout02Icon} className="w-6 h-6" />
           <span className="text-lg font-medium">Log Out</span>

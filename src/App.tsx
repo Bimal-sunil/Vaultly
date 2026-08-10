@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
 import AllSubscriptions from "./pages/AllSubscriptions";
 import Profile from "./pages/Profile";
+import AccountDetails from "./pages/AccountDetails";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
@@ -42,10 +43,11 @@ function App() {
           element={<ProtectedRoute><AddSubscription /></ProtectedRoute>}
         />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/account-details" element={<ProtectedRoute><AccountDetails /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<OTPVerification />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       {!isAuthRoute && <NavBar />}
     </main>
