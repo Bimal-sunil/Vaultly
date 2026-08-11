@@ -59,7 +59,7 @@ function Profile() {
         <ProfileImageUpload />
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-light">
-            Hello, {profile?.first_name || "User"}!
+            {profile?.first_name || "User"} {profile?.last_name || ""}
           </h2>
           <p className="text-accent-bg text-sm mt-1">{profile?.email}</p>
         </div>

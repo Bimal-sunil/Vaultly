@@ -5,6 +5,8 @@ import InputField from "../components/InputField";
 import Button from "../components/Button";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { supabase } from "../../utils/supabase";
+import Popup from "../components/Popup";
 
 function AccountDetails() {
   const navigate = useNavigate();
@@ -15,12 +17,31 @@ function AccountDetails() {
   const [lastName, setLastName] = useState(profile?.last_name || "");
   const [email, setEmail] = useState(profile?.email || "");
 
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleSave = () => {
     // To be implemented
   };
 
-  const handleDeleteAccount = () => {
-    // To be implemented
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+
+      if (profile?.avatar_url) {
+        await supabase.storage.from("avatars").remove([`${profile.id}`]);
+      }
+      const { error: rpcError } = await supabase.rpc("delete_user");
+      if (rpcError) throw rpcError;
+
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
+    } catch (err) {
+      console.error("Error deleting account:", err);
+    } finally {
+      setIsDeleting(false);
+      setIsDeletePopupOpen(false);
+    }
   };
 
   return (
@@ -67,13 +88,25 @@ function AccountDetails() {
           </p>
           <button
             className="w-full flex items-center justify-center gap-2 p-4 rounded-[15px] bg-[rgba(255,99,71,0.1)] border border-[rgba(255,99,71,0.5)] text-[#FF6347] hover:bg-[rgba(255,99,71,0.2)] transition-colors mt-2"
-            onClick={handleDeleteAccount}
+            onClick={() => setIsDeletePopupOpen(true)}
           >
             <HugeiconsIcon icon={Delete02Icon} className="w-6 h-6" />
             <span className="text-lg font-medium">Delete Account</span>
           </button>
         </div>
       </div>
+
+      {/* Confirmation Popup */}
+      <Popup
+        isOpen={isDeletePopupOpen}
+        onClose={() => setIsDeletePopupOpen(false)}
+        title="Delete Account?"
+        description="This action is permanent and cannot be undone. All your subscriptions and personal data will be lost forever."
+        onConfirm={handleDeleteAccount}
+        confirmText="Yes, Delete My Account"
+        isDestructive={true}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
