@@ -47,7 +47,7 @@ function Profile() {
     <div className="w-full flex flex-col gap-8 pb-12">
       <div
         className="flex items-center gap-4 cursor-pointer"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
       >
         <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent w-8 h-8" />
         <h1 className="font-primary text-3xl font-semibold text-light">

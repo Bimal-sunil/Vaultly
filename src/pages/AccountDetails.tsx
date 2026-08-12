@@ -7,21 +7,46 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import { supabase } from "../../utils/supabase";
 import Popup from "../components/Popup";
+import { toast } from "sonner";
 
 function AccountDetails() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
 
   // State to hold form data (features will be implemented by user)
   const [firstName, setFirstName] = useState(profile?.first_name || "");
   const [lastName, setLastName] = useState(profile?.last_name || "");
   const [email, setEmail] = useState(profile?.email || "");
 
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const handleSave = () => {
-    // To be implemented
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from("Profiles")
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+        })
+        .eq("id", profile?.id);
+
+      if (error) {
+        throw error;
+      }
+
+      await refreshProfile();
+
+      toast.success("Profile Updated", {
+        description: "Your account details have been successfully saved.",
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Error saving profile");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -75,7 +100,13 @@ function AccountDetails() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Button label="Save Changes" onClick={handleSave} />
+        <div>
+          <Button
+            label="Save Changes"
+            onClick={handleSave}
+            isLoading={isSaving}
+          />
+        </div>
       </div>
 
       {/* Danger Zone */}
