@@ -1,73 +1,69 @@
-# React + TypeScript + Vite
+# Vaultly
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vaultly is a sleek, modern subscription management web application built with React, TypeScript, and Vite. It helps users track, manage, and organize their recurring subscriptions in a beautiful, glassmorphic dark-themed interface.
 
-Currently, two official plugins are available:
+## 🌟 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Authentication:** Secure Sign Up, Login, and OTP Verification powered by Supabase Auth.
+- **Profile Management:** Update account details and upload/remove profile avatars (using Supabase Storage).
+- **Security First:** Includes a robust Account Deletion flow with secure PostgreSQL RPC functions and RLS policies.
+- **Subscription Tracking:** Add, edit, and view all your recurring subscriptions (WIP).
+- **Beautiful UI:** 
+  - Dark mode with glassmorphism effects.
+  - Fully responsive design using Tailwind CSS v4.
+  - Accessible and animated toast notifications via [Sonner](https://sonner.emilkowal.ski/).
+  - Premium icons from [Hugeicons](https://hugeicons.com/).
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend Framework:** React 19 + TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS v4 + tailwind-merge
+- **Backend & Auth:** Supabase
+- **Routing:** React Router v7
+- **Notifications:** Sonner
+- **Icons:** React Icons & Hugeicons
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Bimal-sunil/Vaultly.git
+   ```
+2. Navigate into the project directory:
+   ```bash
+   cd Vaultly
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Environment Variables
+Create a `.env` file in the root of your project and add your Supabase credentials:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Running Locally
+To start the Vite development server:
+```bash
+npm run dev
 ```
+Open your browser and navigate to the local URL provided in the terminal (usually `http://localhost:5173`).
+
+## 📁 Project Structure
+
+- `src/components/` - Reusable UI components (Buttons, Inputs, Popups, Toasts).
+- `src/context/` - Global React Context (e.g., `AuthContext.tsx` for global user state).
+- `src/pages/` - Main route components (Login, Profile, AccountDetails, Subscriptions).
+- `src/utils/` - Utility functions and Supabase client configuration.
+
+## 📝 License
+This project is open-source and available under the MIT License.
