@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 import { supabase } from "../../utils/supabase";
+import { toast } from "sonner";
 
 function OTPVerification() {
   const location = useLocation();
@@ -11,6 +12,10 @@ function OTPVerification() {
 
   const [otp, setOtp] = useState("");
   const [validationError, setValidationError] = useState<string>("");
+  const [timer, setTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const email = state?.email || "";
 
   useEffect(() => {
@@ -19,6 +24,18 @@ function OTPVerification() {
       navigate("/login", { replace: true });
     }
   }, [email, navigate]);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   if (!email) return null;
 
@@ -30,6 +47,8 @@ function OTPVerification() {
       return;
     }
 
+    setIsVerifying(true);
+    
     const {
       data: { session },
       error,
@@ -38,6 +57,9 @@ function OTPVerification() {
       token: otp,
       type: "email",
     });
+    
+    setIsVerifying(false);
+
     if (error) {
       setValidationError(
         error.code === "otp_expired" ? "OTP Expired" : "Invalid OTP",
@@ -48,6 +70,27 @@ function OTPVerification() {
       setValidationError("");
       navigate("/");
       console.log("OTP verified successfully:", session);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setIsResending(true);
+    try {
+      const { error, data } = await supabase.auth.signInWithOtp({
+        email,
+      });
+      if (error) throw error;
+
+      setTimer(30);
+      setCanResend(false);
+      toast.success("OTP Sent!", {
+        description: "A new code has been sent to your email.",
+      });
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Failed to resend OTP", { description: err.message });
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -76,14 +119,33 @@ function OTPVerification() {
           error={validationError}
         />
         <div className="mt-4 flex flex-col items-center gap-4">
-          <Button label="Verify & Proceed" onClick={() => handleVerifyOtp()} />
+          <Button label="Verify & Proceed" onClick={() => handleVerifyOtp()} isLoading={isVerifying} />
           <button
             type="button"
-            className="text-accent-bg hover:text-light p transition-colors"
+            className="text-accent-bg hover:text-light p transition-colors disabled:opacity-50"
             onClick={() => navigate(-1)}
+            disabled={isVerifying || isResending}
           >
             Go Back
           </button>
+
+          <div className="mt-2 text-sm">
+            {canResend ? (
+              <button
+                type="button"
+                className="text-accent font-medium hover:brightness-110 transition-colors disabled:opacity-50"
+                onClick={handleResendOtp}
+                disabled={isResending || isVerifying}
+              >
+                {isResending ? "Sending..." : "Resend OTP"}
+              </button>
+            ) : (
+              <p className="text-accent-bg">
+                Resend OTP in{" "}
+                <span className="font-medium text-light">{timer}s</span>
+              </p>
+            )}
+          </div>
         </div>
       </form>
     </div>

@@ -13,6 +13,7 @@ function Signup() {
     lastName: "",
     email: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSendOtp = async (e?: React.FormEvent) => {
@@ -34,6 +35,8 @@ function Signup() {
 
     if (hasError) return;
 
+    setIsSubmitting(true);
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -44,6 +47,8 @@ function Signup() {
         },
       },
     });
+
+    setIsSubmitting(false);
 
     if (error) {
       console.error("Unable to create user!", error);
@@ -101,7 +106,7 @@ function Signup() {
           error={errors.email}
         />
         <div className="mt-4 flex justify-center">
-          <Button label="Send OTP" onClick={() => handleSendOtp()} />
+          <Button label="Send OTP" onClick={() => handleSendOtp()} isLoading={isSubmitting} />
         </div>
       </form>
 

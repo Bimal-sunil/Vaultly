@@ -23,7 +23,7 @@ function Button(props: Props) {
       {isLoading && (
         <span className="w-5 h-5 border-2 border-dark border-t-transparent rounded-full animate-spin inline-block" />
       )}
-      <span>{isLoading ? "Processing..." : label}</span>
+      <span>{label}</span>
     </button>
   );
 }
