@@ -141,13 +141,6 @@ function AddSubscription() {
         Add Subscription
       </h1>
       <form action="" className="w-full flex flex-col gap-8 items-center">
-        <ChipContainer
-          options={categories
-            .filter((category) => category.categoryname !== "All")
-            .map((category) => category.categoryname)}
-          onChange={(value) => handleSelectChange("categoryName", value)}
-          value={subscriptionData.categoryName}
-        />
         <HeroInput
           icon={
             categories.find(
@@ -159,6 +152,14 @@ function AddSubscription() {
           onChange={(value) => handleSelectChange("amount", value)}
           label="Amount"
           autoFocus={true}
+        />
+        <ChipContainer
+          label="Category"
+          options={categories
+            .filter((category) => category.categoryname !== "All")
+            .map((category) => category.categoryname)}
+          onChange={(value) => handleSelectChange("categoryName", value)}
+          value={subscriptionData.categoryName}
         />
         <ToggleGroup
           options={[
