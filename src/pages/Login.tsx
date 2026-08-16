@@ -19,13 +19,13 @@ function Login() {
 
     setError("");
     setIsLoading(true);
-    
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
     });
-    
+
     setIsLoading(false);
-    
+
     if (error) {
       console.error("Login OTP error:", error);
       setError("Failed to send OTP. Please wait a moment and try again.");
@@ -58,7 +58,11 @@ function Login() {
           error={error}
         />
         <div className="mt-4 flex justify-center">
-          <Button label="Send OTP" onClick={() => handleSendOtp()} isLoading={isLoading} />
+          <Button
+            label="Send OTP"
+            onClick={() => handleSendOtp()}
+            isLoading={isLoading}
+          />
         </div>
       </form>
 

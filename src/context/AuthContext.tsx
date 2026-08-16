@@ -44,6 +44,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (error) {
       console.error("Error fetching profile:", error);
     }
+
+    if (data && data.avatar_url) {
+      // Generate a secure, 1-hour signed URL using the user's ID as the file path
+      const filePath = `${userId}`;
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(filePath, 60 * 60);
+        
+      if (signedData?.signedUrl) {
+        data.avatar_url = signedData.signedUrl; // Temporarily inject it into state
+      } else if (signedError) {
+        console.error("Error fetching signed URL:", signedError);
+        data.avatar_url = null; // Clear it to prevent broken image icons
+      }
+    }
+
     setProfile(data || null);
   };
 

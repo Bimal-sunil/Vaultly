@@ -25,16 +25,11 @@ function ProfileImageUpload() {
         throw uploadError;
       }
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      
-      // Append a timestamp to the URL to force the browser to ignore its cache
-      const updatedUrl = `${publicUrl}?t=${Date.now()}`;
-
+      // We no longer fetch a publicUrl because the bucket is private.
+      // Instead, we just save the filePath to the database to signal that an avatar exists.
       const { error: updateError } = await supabase
         .from("Profiles")
-        .update({ avatar_url: updatedUrl })
+        .update({ avatar_url: filePath })
         .eq("id", profile?.id);
 
       if (updateError) {
