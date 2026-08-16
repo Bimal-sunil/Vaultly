@@ -52,6 +52,11 @@ function Signup() {
 
     if (error) {
       console.error("Unable to create user!", error);
+      if (error.status === 429 || error.message?.toLowerCase().includes("rate limit")) {
+        setErrors({ ...errors, email: "Please wait 60 seconds before requesting another email." });
+      } else {
+        setErrors({ ...errors, email: error.message || "Failed to create account. Please try again." });
+      }
       return;
     }
 

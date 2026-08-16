@@ -28,7 +28,11 @@ function Login() {
 
     if (error) {
       console.error("Login OTP error:", error);
-      setError("Failed to send OTP. Please wait a moment and try again.");
+      if (error.status === 429 || error.message?.toLowerCase().includes("rate limit")) {
+        setError("Please wait 60 seconds before requesting another email.");
+      } else {
+        setError(error.message || "Failed to send OTP. Please try again.");
+      }
       return;
     }
     navigate("/verify", { state: { email } });

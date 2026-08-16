@@ -88,7 +88,11 @@ function OTPVerification() {
       });
     } catch (err: any) {
       console.error(err);
-      toast.error("Failed to resend OTP", { description: err.message });
+      if (err.status === 429 || err.message?.toLowerCase().includes("rate limit")) {
+        toast.error("Rate Limit Exceeded", { description: "Please wait 60 seconds before requesting another email." });
+      } else {
+        toast.error("Failed to resend OTP", { description: err.message });
+      }
     } finally {
       setIsResending(false);
     }
