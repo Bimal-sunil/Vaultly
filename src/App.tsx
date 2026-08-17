@@ -11,6 +11,7 @@ import AccountDetails from "./pages/AccountDetails";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
+import Insights from "./pages/Insights";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "sonner";
 import { twMerge } from "tailwind-merge";
@@ -81,6 +82,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AccountDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/insights"
+          element={
+            <ProtectedRoute>
+              <Insights />
             </ProtectedRoute>
           }
         />

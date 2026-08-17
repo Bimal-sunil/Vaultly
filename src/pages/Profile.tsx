@@ -24,14 +24,19 @@ function Profile() {
       label: "Account Details",
       onClick: () => navigate("/account-details"),
     },
-    { icon: Settings02Icon, label: "Settings", onClick: () => {} },
+    { icon: Settings02Icon, label: "Settings", onClick: () => {}, beta: true },
     {
       icon: Notification02Icon,
       label: "Notifications",
       onClick: () => {},
       beta: true,
     },
-    { icon: HelpCircleIcon, label: "Help & Support", onClick: () => {} },
+    {
+      icon: HelpCircleIcon,
+      label: "Help & Support",
+      onClick: () => {},
+      beta: true,
+    },
   ];
 
   const handleLogout = async () => {
