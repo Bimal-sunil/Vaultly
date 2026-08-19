@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OTPVerification from "./pages/OTPVerification";
 import Insights from "./pages/Insights";
+import Pluto from "./pages/Pluto";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "sonner";
 import { twMerge } from "tailwind-merge";
@@ -90,6 +91,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Insights />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pluto"
+          element={
+            <ProtectedRoute>
+              <Pluto />
             </ProtectedRoute>
           }
         />
