@@ -2,20 +2,33 @@ type Props = {
   title: string;
   content: string;
   description: string;
+  highlight?: boolean;
 };
 
 function Card(props: Props) {
-  const { title, content, description } = props;
+  const { title, content, description, highlight } = props;
   return (
     <>
-      <div className="p-3 rounded-[15px] flex flex-col gap-2 w-full bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)]">
-        <span className="pb text-accent-bg uppercase overflow-hidden text-ellipsis">
+      <div
+        className={`p-4 rounded-[20px] flex flex-col gap-2 w-full h-full ${
+          highlight ? "bg-accent text-dark" : "bg-dark-accent text-light"
+        }`}
+      >
+        <span
+          className={`pb uppercase overflow-hidden text-ellipsis ${
+            highlight ? "text-dark/80" : "text-accent-bg"
+          }`}
+        >
           {title}
         </span>
-        <span className="text-light h3b overflow-hidden text-ellipsis">
-          {content}
-        </span>
-        <p className="text-accent-bg pb">{description}</p>
+        <span className="h3b overflow-hidden text-ellipsis">{content}</span>
+        <p
+          className={`pb ${
+            highlight ? "text-dark/80" : "text-accent-bg"
+          }`}
+        >
+          {description}
+        </p>
       </div>
     </>
   );

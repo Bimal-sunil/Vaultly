@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpRight01Icon, ArrowLeft02Icon } from "@hugeicons/core-free-icons";
+import {
+  ArrowUpRight01Icon,
+  ArrowLeft02Icon,
+} from "@hugeicons/core-free-icons";
 import Card from "../components/Card";
 import ToggleGroup from "../components/ToggleGroup";
 
@@ -32,7 +35,13 @@ function Insights() {
       hex: "#FFE66D",
       percentage: 15,
     },
-    { name: "Health", amount: 450, color: "bg-[#FF9F1C]", hex: "#FF9F1C", percentage: 15 },
+    {
+      name: "Health",
+      amount: 450,
+      color: "bg-[#FF9F1C]",
+      hex: "#FF9F1C",
+      percentage: 15,
+    },
   ];
 
   let cumulativePercent = 0;
@@ -47,21 +56,21 @@ function Insights() {
   return (
     <div className="w-full flex flex-col gap-8 text-light fade-in">
       <section className="flex items-start gap-4">
-        <div 
-          className="cursor-pointer mt-1"
-          onClick={() => navigate("/")}
-        >
-          <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent w-8 h-8" />
+        <div className="cursor-pointer mt-1" onClick={() => navigate("/")}>
+          <HugeiconsIcon
+            icon={ArrowLeft02Icon}
+            className="text-accent w-8 h-8"
+          />
         </div>
         <div className="flex flex-col gap-1">
-          <h1 className="h1 leading-tight">Insights</h1>
+          <h1 className="h3 leading-tight">Insights</h1>
           <p className="text-accent-bg uppercase p">Your spending habits</p>
         </div>
       </section>
 
       {/* Main Stats */}
       <section className="flex flex-col gap-4">
-        <div className="p-6 rounded-[15px] w-full bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)] relative overflow-hidden">
+        <div className="p-6 rounded-[24px] w-full bg-dark-accent relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
           <p className="pb text-accent-bg uppercase mb-1">
             Total Monthly Spend
@@ -80,16 +89,8 @@ function Insights() {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <Card
-            title="Active Subs"
-            content="12"
-            description="subscriptions"
-          />
-          <Card
-            title="Upcoming (7 days)"
-            content="3"
-            description="renewals"
-          />
+          <Card title="Active Subs" content="12" description="subscriptions" />
+          <Card title="Upcoming (7 days)" content="3" description="renewals" />
         </div>
       </section>
 
@@ -127,8 +128,10 @@ function Insights() {
             </div>
           ) : (
             /* Pie Chart Container */
-            <div className="relative w-32 h-32 rounded-full shadow-lg" style={{ background: `conic-gradient(${conicGradientString})` }}>
-            </div>
+            <div
+              className="relative w-32 h-32 rounded-full shadow-lg"
+              style={{ background: `conic-gradient(${conicGradientString})` }}
+            ></div>
           )}
         </div>
 

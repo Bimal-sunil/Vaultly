@@ -27,7 +27,7 @@ function NavBar() {
     setLeftPosition(leftPosition);
   };
   return (
-    <div className="flex items-center gap-2 rounded-[999px] p-2 fixed bottom-8 backdrop-blur-md bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)]">
+    <div className="flex items-center gap-2 rounded-[999px] p-2 fixed bottom-8 left-1/2 -translate-x-1/2 bg-accent/[0.02] border border-accent/15 backdrop-blur-xl shadow-lg z-50">
       <div
         className="absolute w-12 h-12 p-3 rounded-[50%] bg-accent transition-transform duration-300 ease-in-out"
         style={{

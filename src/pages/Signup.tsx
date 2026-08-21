@@ -52,10 +52,19 @@ function Signup() {
 
     if (error) {
       console.error("Unable to create user!", error);
-      if (error.status === 429 || error.message?.toLowerCase().includes("rate limit")) {
-        setErrors({ ...errors, email: "Please wait 60 seconds before requesting another email." });
+      if (
+        error.status === 429 ||
+        error.message?.toLowerCase().includes("rate limit")
+      ) {
+        setErrors({
+          ...errors,
+          email: "Please wait 60 seconds before requesting another email.",
+        });
       } else {
-        setErrors({ ...errors, email: error.message || "Failed to create account. Please try again." });
+        setErrors({
+          ...errors,
+          email: error.message || "Failed to create account. Please try again.",
+        });
       }
       return;
     }
@@ -68,9 +77,7 @@ function Signup() {
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-[80vh] gap-8">
       <div className="text-center">
-        <h1 className="font-primary text-4xl font-semibold text-light mb-2">
-          Create Account
-        </h1>
+        <h1 className="h2 text-light mb-2">Create Account</h1>
         <p className="text-accent-bg">Join Vaultly today</p>
       </div>
 
@@ -111,7 +118,11 @@ function Signup() {
           error={errors.email}
         />
         <div className="mt-4 flex justify-center">
-          <Button label="Send OTP" onClick={() => handleSendOtp()} isLoading={isSubmitting} />
+          <Button
+            label="Send OTP"
+            onClick={() => handleSendOtp()}
+            isLoading={isSubmitting}
+          />
         </div>
       </form>
 

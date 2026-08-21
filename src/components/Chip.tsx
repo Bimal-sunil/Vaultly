@@ -9,7 +9,7 @@ function Chip(props: Props) {
   return (
     <button
       data-selected={selected}
-      className={`cursor-pointer p-[0.5rem_1rem] border rounded-[50px] border-accent ${selected ? "bg-accent text-dark" : "bg-transparent text-accent"}`}
+      className={`cursor-pointer p-[0.5rem_1rem] border rounded-[50px] border-accent snap-start shrink-0 transition-colors ${selected ? "bg-accent text-dark" : "bg-transparent text-accent"}`}
       onClick={(e) => {
         e.preventDefault();
         onClick?.();

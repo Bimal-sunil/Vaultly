@@ -61,9 +61,7 @@ function AllSubscriptions() {
         onClick={() => navigate("/")}
       >
         <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent w-8 h-8" />
-        <h1 className="font-primary text-3xl font-semibold text-light">
-          All Subscriptions
-        </h1>
+        <h1 className="h3 text-light">All Subscriptions</h1>
       </div>
 
       <div className="relative w-full">

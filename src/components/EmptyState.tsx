@@ -37,8 +37,8 @@ function EmptyState({
 
       {/* Main Display Card */}
       <div
-        className={`w-full border bg-[linear-gradient(145deg,rgba(51,51,51,0.2)_0%,rgba(27,27,27,0.4)_100%)] backdrop-blur-xl rounded-3xl p-8 flex flex-col items-center shadow-xl relative overflow-hidden group ${
-          is404 ? "border-light/10 sm:p-12 gap-6" : "border-light/5 gap-5"
+        className={`w-full bg-dark-accent rounded-[32px] p-8 flex flex-col items-center relative overflow-hidden group ${
+          is404 ? "sm:p-12 gap-6" : "gap-5"
         }`}
       >
         {/* Subtle Accent Glow Corner */}

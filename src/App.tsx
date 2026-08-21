@@ -25,7 +25,7 @@ function App() {
     location.pathname === "/verify";
 
   return (
-    <main className={twMerge("app p-8", !isAuthRoute ? "pb-28" : "")}>
+    <main className={twMerge("app p-8 max-w-5xl mx-auto", !isAuthRoute ? "pb-28 md:pb-12" : "")}>
       {!isAuthRoute ? (
         <Header />
       ) : (

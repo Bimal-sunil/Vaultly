@@ -58,17 +58,17 @@ function SubscriptionCard(props: Props) {
 
   return (
     <div
-      className={`flex items-center justify-between bg-[linear-gradient(135deg,rgba(51,51,51,0.2)_0%,rgba(215,255,0,0.2)_100%)] gap-4 p-3 bg-text rounded-[25px] w-full ${!isActive ? "opacity-50" : ""}`}
+      className={`flex items-center justify-between bg-dark-accent gap-4 p-4 rounded-[24px] w-full ${!isActive ? "opacity-50" : ""}`}
     >
       <div className="flex items-center gap-2 w-[60%]">
         {selectedCategory?.icon && (
           <HugeiconsIcon
             icon={selectedCategory?.icon}
-            className="w-12 h-12 p-2 bg-accent-bg text-dark rounded-[10px]"
+            className="w-12 h-12 p-2 bg-accent-bg text-dark rounded-[10px] shrink-0"
           />
         )}
-        <div className="flex flex-col">
-          <h3 className="h4 text-light">{subscriptionName}</h3>
+        <div className="flex flex-col min-w-0">
+          <h3 className="h4 text-light truncate">{subscriptionName}</h3>
           {dueNext >= 0 && (
             <div className="w-full flex items-center gap-1 flex-wrap">
               <span className="w-2 h-2 bg-[#EA2B1F] block rounded-[50%]"></span>

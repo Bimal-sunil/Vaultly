@@ -28,7 +28,10 @@ function Login() {
 
     if (error) {
       console.error("Login OTP error:", error);
-      if (error.status === 429 || error.message?.toLowerCase().includes("rate limit")) {
+      if (
+        error.status === 429 ||
+        error.message?.toLowerCase().includes("rate limit")
+      ) {
         setError("Please wait 60 seconds before requesting another email.");
       } else {
         setError(error.message || "Failed to send OTP. Please try again.");
@@ -41,9 +44,7 @@ function Login() {
   return (
     <div className="w-full flex flex-col items-center justify-center min-h-[80vh] gap-8">
       <div className="text-center">
-        <h1 className="font-primary text-4xl font-semibold text-light mb-2">
-          Welcome Back
-        </h1>
+        <h1 className="h2 text-light mb-2">Welcome Back</h1>
         <p className="text-accent-bg">Log in to your Vaultly account</p>
       </div>
 

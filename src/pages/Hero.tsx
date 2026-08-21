@@ -75,7 +75,7 @@ function Hero() {
         <p className="text-accent-bg uppercase p">{formatDate(new Date())}</p>
       </section>
       <section className="flex flex-col gap-12 items-center">
-        <div className="w-full grid grid-cols-2 gap-3 place-items-center">
+        <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3">
           <Card
             title="This Month"
             content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Monthly")))}`}
@@ -85,6 +85,7 @@ function Hero() {
             title="Yearly Est."
             content={`₹${formatAmount(Number(findTotalAmount(subscriptions, "Yearly")))}`}
             description={`at current spend`}
+            highlight={true}
           />
           <Card
             title="Active"
@@ -113,31 +114,33 @@ function Hero() {
           />
         ) : visibleSubscriptions.length > 0 ? (
           <>
-            {visibleSubscriptions.map((subscription) => (
-              <SubscriptionCard
-                id={subscription["id"]}
-                key={subscription["id"]}
-                isActive={subscription["is_active"]}
-                subscriptionName={subscription["subscription_name"]}
-                categoryName={subscription["category_name"]}
-                amount={subscription["amount"]}
-                expiryDate={subscription["expiry_date"]}
-                renewalDayOfMonth={subscription["renewal_day_of_month"]}
-                renewalDate={subscription["renewal_date"]}
-                frequency={subscription["frequency"]}
-                priority={subscription["priority"]}
-                onEdit={(id) => navigate(`/editSubscription/${id}`)}
-                onDelete={async (id) => {
-                  const { error } = await supabase
-                    .from("Subscriptions")
-                    .delete()
-                    .eq("id", id);
-                  if (error)
-                    console.error("Error deleting subscription:", error);
-                  await fetchSubscriptionData();
-                }}
-              />
-            ))}
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+              {visibleSubscriptions.map((subscription) => (
+                <SubscriptionCard
+                  id={subscription["id"]}
+                  key={subscription["id"]}
+                  isActive={subscription["is_active"]}
+                  subscriptionName={subscription["subscription_name"]}
+                  categoryName={subscription["category_name"]}
+                  amount={subscription["amount"]}
+                  expiryDate={subscription["expiry_date"]}
+                  renewalDayOfMonth={subscription["renewal_day_of_month"]}
+                  renewalDate={subscription["renewal_date"]}
+                  frequency={subscription["frequency"]}
+                  priority={subscription["priority"]}
+                  onEdit={(id) => navigate(`/editSubscription/${id}`)}
+                  onDelete={async (id) => {
+                    const { error } = await supabase
+                      .from("Subscriptions")
+                      .delete()
+                      .eq("id", id);
+                    if (error)
+                      console.error("Error deleting subscription:", error);
+                    await fetchSubscriptionData();
+                  }}
+                />
+              ))}
+            </div>
             {visibleSubscriptions.length === 5 && (
               <div className="w-full flex justify-center mt-2">
                 <Button

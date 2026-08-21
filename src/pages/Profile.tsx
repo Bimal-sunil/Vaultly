@@ -55,15 +55,13 @@ function Profile() {
         onClick={() => navigate("/")}
       >
         <HugeiconsIcon icon={ArrowLeft02Icon} className="text-accent w-8 h-8" />
-        <h1 className="font-primary text-3xl font-semibold text-light">
-          Profile
-        </h1>
+        <h1 className="h3 text-light">Profile</h1>
       </div>
 
       <div className="flex flex-col items-center gap-4 mt-4">
         <ProfileImageUpload />
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-light">
+          <h2 className="h3 text-light">
             {profile?.first_name || "User"} {profile?.last_name || ""}
           </h2>
           <p className="text-accent-bg text-sm mt-1">{profile?.email}</p>

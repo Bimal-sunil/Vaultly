@@ -77,7 +77,7 @@ function Pluto() {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <h1 className="h1 leading-tight">Pluto</h1>
+          <h1 className="h3 leading-tight">Pluto</h1>
           <p className="text-accent-bg uppercase p">Your AI Assistant</p>
         </div>
       </section>
@@ -93,7 +93,7 @@ function Pluto() {
                 "max-w-[85%] rounded-[20px] p-4 text-sm leading-relaxed",
                 isUser
                   ? "self-end bg-accent text-[#1A1A1A] font-medium rounded-br-sm shadow-sm"
-                  : "self-start bg-[linear-gradient(135deg,rgba(51,51,51,0.4)_0%,rgba(215,255,0,0.05)_100%)] border border-[rgba(255,255,255,0.05)] text-light rounded-bl-sm shadow-md",
+                  : "self-start bg-dark-accent text-light rounded-bl-sm shadow-sm",
               )}
             >
               {msg.text}
